@@ -1,0 +1,21 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel Prepare
+
+RWStructuredBuffer<float4> points;
+
+int numPointsPerAxis;
+
+int indexFromCoord(uint x, uint y, uint z) {
+    return z * numPointsPerAxis * numPointsPerAxis + y * numPointsPerAxis + x;
+}
+
+[numthreads(8,8,8)]
+void Prepare (uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= numPointsPerAxis || id.y >= numPointsPerAxis || id.z >= numPointsPerAxis) {
+        return;
+    }
+    int index = indexFromCoord(id.x,id.y,id.z);
+    points[index] = float4(0.0f,0.0f,0.0f,0.0f);
+
+}

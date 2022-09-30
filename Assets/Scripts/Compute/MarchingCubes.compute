@@ -1,0 +1,182 @@
+﻿#pragma kernel March
+#include "/Includes/MarchTables.compute"
+
+static const int numThreads = 8;
+
+struct Vertex {
+    float3 position;
+    float3 normal;
+    int2 id;
+    int data;
+};
+struct Triangle {
+    Vertex vertexC;
+    Vertex vertexB;
+    Vertex vertexA;
+};
+
+AppendStructuredBuffer<Triangle> triangles;
+RWStructuredBuffer<float4> points;
+StructuredBuffer<int> data;
+
+int numPointsPerAxis;
+float isoLevel;
+
+float3 interpolateVerts(float4 v1, float4 v2) {
+    float t = (isoLevel - v1.w) / (v2.w - v1.w);
+    return v1.xyz + t * (v2.xyz-v1.xyz);
+    //return (v1.xyz + v2.xyz)/2;
+}
+
+int type(float4 v1, float4 v2, int a, int b){
+    if(v1.w>v2.w){
+        return a;
+    }
+    return b;
+}
+int indexFromCoord(int3 v) {
+    return v.z * numPointsPerAxis * numPointsPerAxis + v.y * numPointsPerAxis + v.x;
+}
+
+float3 calculateNormal(int3 coord) {
+	int3 offsetX = int3(1, 0, 0);
+	int3 offsetY = int3(0, 1, 0);
+	int3 offsetZ = int3(0, 0, 1);
+    
+    float dx;
+    float dy;
+    float dz;
+    if(coord.x == 0 || coord.x == numPointsPerAxis-1)
+	    dx = 0;
+    else
+	    dx = points[indexFromCoord(coord + offsetX)].w - points[indexFromCoord(coord - offsetX)].w;
+    if(coord.y == 0 || coord.y == numPointsPerAxis-1)
+	    dy = 0;
+    else
+	    dy = points[indexFromCoord(coord + offsetY)].w - points[indexFromCoord(coord - offsetY)].w;
+    if(coord.z == 0 || coord.z == numPointsPerAxis-1)
+	    dz = 0;
+    else
+	    dz = points[indexFromCoord(coord + offsetZ)].w - points[indexFromCoord(coord - offsetZ)].w;
+    
+    if(dx == 0 && dy == 0 && dz == 0)
+        return normalize(float3(1,1,1));
+	return normalize(float3(dx, dy, dz));
+}
+
+
+
+Vertex createVertex(int3 coordA, int3 coordB, int indexA, int indexB, float4 posA, float4 posB) { 
+
+    int dataA = data[indexA]; 
+    int dataB = data[indexB];
+
+	// Interpolate between the two corner points based on the density
+    float t = (isoLevel - posA.w) / (posB.w - posA.w);
+	float3 position = posA.xyz + t * (posB.xyz-posA.xyz);
+
+    // Normal:
+	float3 normalA = calculateNormal(coordA);
+	float3 normalB = calculateNormal(coordB);
+	float3 normal = -normalize(normalA + t * (normalB - normalA));
+
+	// Create vertex
+	Vertex vertex;
+	vertex.position = position;
+    vertex.normal = normal;
+    vertex.id = int2(min(indexA, indexB), max(indexA, indexB)); 
+    vertex.data = type(posA,posB,dataA, dataB);
+	return vertex;
+}
+
+[numthreads(numThreads,numThreads,numThreads)]
+void March (int3 id : SV_DispatchThreadID)
+{   
+    // Stop one point before the end because voxel includes neighbouring points
+    if (id.x >= numPointsPerAxis-1 || id.y >= numPointsPerAxis-1 || id.z >= numPointsPerAxis-1) {
+        return;
+    }
+
+    // 8 corners of the current cube
+    int3 cubeCorners[8] = {
+        int3(id.x, id.y, id.z),
+        int3(id.x + 1, id.y, id.z),
+        int3(id.x + 1, id.y, id.z + 1),
+        int3(id.x, id.y, id.z + 1),
+        int3(id.x, id.y + 1, id.z),
+        int3(id.x + 1, id.y + 1, id.z),
+        int3(id.x + 1, id.y + 1, id.z + 1),
+        int3(id.x, id.y + 1, id.z + 1)
+    };
+
+    int cubeIndexCorners[8] = {
+        indexFromCoord(cubeCorners[0]),
+        indexFromCoord(cubeCorners[1]),
+        indexFromCoord(cubeCorners[2]),
+        indexFromCoord(cubeCorners[3]),
+        indexFromCoord(cubeCorners[4]),
+        indexFromCoord(cubeCorners[5]),
+        indexFromCoord(cubeCorners[6]),
+        indexFromCoord(cubeCorners[7])
+    };
+
+    float4 cubeDataCorners[8] = {
+        points[cubeIndexCorners[0]],
+        points[cubeIndexCorners[1]],
+        points[cubeIndexCorners[2]],
+        points[cubeIndexCorners[3]],
+        points[cubeIndexCorners[4]],
+        points[cubeIndexCorners[5]],
+        points[cubeIndexCorners[6]],
+        points[cubeIndexCorners[7]]
+    };
+
+    // Calculate unique index for each cube configuration.
+	// There are 256 possible values (cube has 8 corners, so 2^8 possibilites).
+	// A value of 0 means cube is entirely inside the surface; 255 entirely outside.
+	// The value is used to look up the edge table, which indicates which edges of the cube the surface passes through.
+	int cubeConfiguration = 0;
+	for (int i = 0; i < 8; i ++) {
+		// Think of the configuration as an 8-bit binary number (each bit represents the state of a corner point).
+		// The state of each corner point is either 0: above the surface, or 1: below the surface.
+		// The code below sets the corresponding bit to 1, if the point is below the surface.
+		if (cubeDataCorners[i].w < isoLevel) {
+			cubeConfiguration |= (1 << i);
+		}
+	}
+	
+	// Get array of the edges of the cube that the surface passes through.
+	int edgeIndices[] = triangulation[cubeConfiguration];
+
+	// Create triangles for the current cube configuration
+	for (i = 0; i < 16; i += 3) {
+		// If edge index is -1, then no further vertices exist in this configuration
+		if (edgeIndices[i] == -1) { break; }
+
+		// Get indices of the two corner points defining the edge that the surface passes through.
+		// (Do this for each of the three edges we're currently looking at).
+		int edgeIndexA = edgeIndices[i];
+		int a0 = cornerIndexAFromEdge[edgeIndexA];
+		int a1 = cornerIndexBFromEdge[edgeIndexA];
+
+		int edgeIndexB = edgeIndices[i+1];
+		int b0 = cornerIndexAFromEdge[edgeIndexB];
+		int b1 = cornerIndexBFromEdge[edgeIndexB];
+
+		int edgeIndexC = edgeIndices[i+2];
+		int c0 = cornerIndexAFromEdge[edgeIndexC];
+		int c1 = cornerIndexBFromEdge[edgeIndexC];
+        // Calculate positions of each vertex.
+		Vertex vertexA = createVertex(cubeCorners[a0], cubeCorners[a1], cubeIndexCorners[a0], cubeIndexCorners[a1], cubeDataCorners[a0], cubeDataCorners[a1]);
+		Vertex vertexB = createVertex(cubeCorners[b0], cubeCorners[b1], cubeIndexCorners[b0], cubeIndexCorners[b1], cubeDataCorners[b0], cubeDataCorners[b1]);
+		Vertex vertexC = createVertex(cubeCorners[c0], cubeCorners[c1], cubeIndexCorners[c0], cubeIndexCorners[c1], cubeDataCorners[c0], cubeDataCorners[c1]);
+
+        Triangle tri;
+        tri.vertexA = vertexA;
+        tri.vertexB = vertexB;
+        tri.vertexC = vertexC;
+        triangles.Append(tri);
+    }
+
+
+}

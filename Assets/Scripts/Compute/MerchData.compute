@@ -1,0 +1,32 @@
+#pragma kernel Merch
+
+static const int numThreads = 8;
+
+RWStructuredBuffer<float4> points;
+StructuredBuffer<float4> points2;
+RWStructuredBuffer<float> data;
+
+
+int numPointsPerAxis;
+float isoLevel;
+
+int indexFromCoord(int x, int y, int z) {
+    return z * numPointsPerAxis * numPointsPerAxis + y * numPointsPerAxis + x;
+}
+
+[numthreads(numThreads, numThreads, numThreads)]
+void Merch (uint3 id : SV_DispatchThreadID)
+{
+    int index = indexFromCoord(id.x, id.y, id.z);
+    float4 p1 = points[index];
+    float4 p2 = points2[index];
+
+    if(p2.w > p1.w){
+        points[index] = float4(p1.xyz, p2.w);
+        data[index] = 1.0;
+    } else {
+        points[index] = p1;
+        data[index] = 0.3;
+    }
+
+}
