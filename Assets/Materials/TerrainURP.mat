@@ -65,6 +65,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_18e88b3e21504ab287a83f34378506c3_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 171a3e8bae41d974ab1a73ca77ed98f2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_8376e1cf5c664fe49251b7f6fb55f262_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 847f18ef0474323418c604bf384eac81, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_86bd2529f6ee48eebf025e36ea7ca596_Texture_1:
         m_Texture: {fileID: 2800000, guid: 25c3d7bca275d1549a18a7626a648051, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -73,12 +81,20 @@ Material:
         m_Texture: {fileID: 2800000, guid: 04d475b5f1ccab542932953b3748710d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_9f4aca47180c472199589c434ddefd17_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 82710cacdacf1874f94854e7ad460824, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_a080aa4fea8a4b478961985d41105fd2_Texture_1:
         m_Texture: {fileID: 2800000, guid: 171a3e8bae41d974ab1a73ca77ed98f2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_ad4b30d821bb4badb50b510b7a5fc67d_Texture_1:
         m_Texture: {fileID: 2800000, guid: 7ca058e983dd4974089419418431adc6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_bc41b38efac741639fdd764cf0d0ad92_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 04d475b5f1ccab542932953b3748710d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_c9d14a0cb8a84c3bacdae7e8610c9628_Texture_1:
@@ -139,7 +155,7 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Selected: {r: -40.533337, g: 5.3333335, b: 4.266667, a: 0}
+    - _Selected: {r: 8.533334, g: 33.06667, b: 11.733334, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &9151838856402057323

@@ -64,7 +64,7 @@ void Density (int3 id : SV_DispatchThreadID)
     
     float v = points[index].w;
     if(points[index].w<isoLevel){
-        data2[index] = val;
+        data2[index] = int(val);
         v = max(points[index].w, finalVal);
     }
     

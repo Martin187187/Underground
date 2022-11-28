@@ -4,7 +4,6 @@ using UnityEngine;
 using System.Threading;
 [ExecuteInEditMode]
 public class MeshGenerator : MonoBehaviour {
-
     const int threadGroupSize = 8;
 
     [Header ("General Settings")]
@@ -58,7 +57,18 @@ public class MeshGenerator : MonoBehaviour {
 
     ConcurrentBag<MeshValues> chunksReadyToUpdate = new ConcurrentBag<MeshValues>();
 
-    
+    private Color[] colorArray = {new Color(67,64, 51)/256,new Color(149,63, 8)/256,new Color(128,25, 10)/256,new Color(84,74, 74)/256,new Color(1,1, 1)};
+
+    void OnEnable(){
+        if (Application.isPlaying && !fixedMapSize) {
+            InitVariableChunkStructures ();
+
+            var oldChunks = FindObjectsOfType<Chunk> ();
+            for (int i = oldChunks.Length - 1; i >= 0; i--) {
+                Destroy (oldChunks[i].gameObject);
+            }
+        }
+    }
     void Awake () {
         if (Application.isPlaying && !fixedMapSize) {
             InitVariableChunkStructures ();
@@ -226,6 +236,13 @@ public class MeshGenerator : MonoBehaviour {
         return new Vector3Int(x,y,z);
     }
 
+    public float getStep(){
+        
+        int numVoxelsPerAxis = numPointsPerAxis-1;
+        float step = boundsSize/numVoxelsPerAxis;
+        return step;
+
+    }
     public Vector3 getIndexFromPositionRasterd(Vector3 v){
         int numVoxelsPerAxis = numPointsPerAxis-1;
         float step = boundsSize/numVoxelsPerAxis;
@@ -255,6 +272,7 @@ public class MeshGenerator : MonoBehaviour {
         
         foreach(DensityGenerator gen in densityGenerator)
             gen.Generate (dataBuffer, pointsBuffer, numPointsPerAxis, boundsSize, worldBounds, centre, offset, pointSpacing, isoLevel);
+        
 
         /*
         merchData.SetBuffer (0, "points", pointsBuffer);
@@ -267,8 +285,10 @@ public class MeshGenerator : MonoBehaviour {
         */
         Vector4[] data = new Vector4[numPointsPerAxis*numPointsPerAxis*numPointsPerAxis];
         pointsBuffer.GetData(data);
+        
         int[] type = new int[numPointsPerAxis*numPointsPerAxis*numPointsPerAxis];
         dataBuffer.GetData(type);
+
         return new ChunkData(data, type);
     }
 
@@ -322,6 +342,7 @@ public class MeshGenerator : MonoBehaviour {
             mesh.uv = values.uvs1;
             mesh.uv2 = values.uvs2;
             mesh.uv3 = values.uvs3;
+            mesh.uv4 = values.information;
             chunk.SetUp(mat, generateColliders);
 
         }
@@ -396,6 +417,8 @@ public class MeshGenerator : MonoBehaviour {
             mesh.uv = values.uvs1;
             mesh.uv2 = values.uvs2;
             mesh.uv3 = values.uvs3;
+            mesh.uv4 = values.information;
+            
             
             //mesh.RecalculateNormals();
             chunk.SetUp(mat, generateColliders);
@@ -411,6 +434,7 @@ public class MeshGenerator : MonoBehaviour {
         var uvs1 = new List<Vector2>();
         var uvs2 = new List<Vector2>();
         var uvs3 = new List<Vector2>();
+        var information = new List<Vector2>();
         for (int i = 0; i < numTris; i++) {
             for (int j = 0; j < 3; j++) {
                 Vector3 currentVector = tris[i][j].position;
@@ -421,15 +445,16 @@ public class MeshGenerator : MonoBehaviour {
                     meshTriangles.Add(vertices.Count);
                     vertices.Add(currentVector);
                     normals.Add(tris[i][j].normal);
-                    colors.Add(new Vector4(0,0,0,tris[i][j].data));
+                    colors.Add(colorArray[tris[i][j].data]);
                     uvs1.Add(new Vector2(tris[i][j].position.x / (float)boundsSize, tris[i][j].position.z / (float)boundsSize));
                     uvs2.Add(new Vector2(tris[i][j].position.z / (float)boundsSize, tris[i][j].position.y / (float)boundsSize));
                     uvs3.Add(new Vector2(tris[i][j].position.y / (float)boundsSize, tris[i][j].position.x / (float)boundsSize));
+                    information.Add(new Vector2(tris[i][j].data,0));
                 }
                 
             }
         }
-        return new MeshValues(chunk.coord, vertices.ToArray(), normals.ToArray(), meshTriangles.ToArray(), colors.ToArray(), uvs1.ToArray(), uvs2.ToArray(), uvs3.ToArray());
+        return new MeshValues(chunk.coord, vertices.ToArray(), normals.ToArray(), meshTriangles.ToArray(), colors.ToArray(), uvs1.ToArray(), uvs2.ToArray(), uvs3.ToArray(), information.ToArray());
     }
 
     public MeshValues CalculateMeshFull(Triangle[] tris, int numTris, Chunk chunk){
@@ -442,19 +467,21 @@ public class MeshGenerator : MonoBehaviour {
         var uvs1 = new Vector2[numTris*3];
         var uvs2 = new Vector2[numTris*3];
         var uvs3 = new Vector2[numTris*3];
+        var information = new Vector2[numTris*3];
 
         for (int i = 0; i < numTris; i++) {
             for (int j = 0; j < 3; j++) {
                 meshTriangles[i * 3 + j] = i * 3 + j;
                 vertices[i * 3 + j] = tris[i][j].position;
                 normals[i * 3 + j] = tris[i][j].normal;
-                colors[i*3+j] = new Vector4(0,0,0,tris[i][j].data);
+                colors[i*3+j] = colorArray[tris[i][j].data];
                 uvs1[i*3+j] = new Vector2(tris[i][j].position.x / (float)boundsSize, tris[i][j].position.z / (float)boundsSize);
                 uvs2[i*3+j] = new Vector2(tris[i][j].position.y / (float)boundsSize, tris[i][j].position.z / (float)boundsSize);
                 uvs3[i*3+j] = new Vector2(tris[i][j].position.y / (float)boundsSize, tris[i][j].position.x / (float)boundsSize);
+                information[i*3+j] = new Vector2(tris[i][j].data, 0);
             }
         }
-        return new MeshValues(chunk.coord, vertices, normals, meshTriangles, colors, uvs1, uvs2, uvs3);
+        return new MeshValues(chunk.coord, vertices, normals, meshTriangles, colors, uvs1, uvs2, uvs3, information);
     }
 
 
@@ -613,8 +640,9 @@ public class MeshValues {
     public Vector2[] uvs1;
     public Vector2[] uvs2;
     public Vector2[] uvs3;
+    public Vector2[] information;
 
-    public MeshValues(Vector3Int coord, Vector3[] vertices, Vector3[] normals, int[] meshTriangles, Color[] colors, Vector2[] uvs1, Vector2[] uvs2, Vector2[] uvs3){
+    public MeshValues(Vector3Int coord, Vector3[] vertices, Vector3[] normals, int[] meshTriangles, Color[] colors, Vector2[] uvs1, Vector2[] uvs2, Vector2[] uvs3, Vector2[] information){
         this.coord = coord;
         this.vertices = vertices;
         this.normals = normals;
@@ -623,6 +651,7 @@ public class MeshValues {
         this.uvs1 = uvs1;
         this.uvs2 = uvs2;
         this.uvs3 = uvs3;
+        this.information = information;
     }
 }
     void OnDrawGizmos () {

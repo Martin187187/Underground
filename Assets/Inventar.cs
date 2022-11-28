@@ -2,21 +2,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using TMPro;
+using System.Text;
 
 
 public class Inventar : MonoBehaviour
 {
+    
+    [SerializeField] TextMeshProUGUI display;
+    [SerializeField] TextMeshProUGUI inventoryDisplay;
     public Tool tool;
     public Transform viewer;
     public MeshGenerator generator;
     public MeshManager manager;
     public Vector3 selectedPosition = new Vector3(0,0,0);
+
+    public Vector3 selectedDirection = Vector3.zero;
+
+    public Marker marker;
+
     private bool isLocked = false;
     private float lockData;
     public enum Tool{
-        None, Excevate, Building, ExcevateLimit, BuildingLimit
+        None, Building, BuildEdge, Mark
     };
+    public Dictionary<Type, float> typeInventory = new Dictionary<Type, float>();
 
+    void OnEnable(){
+        typeInventory.Add(Type.Beton, 10000);
+    }
     void FixedUpdate(){
         if (tool != Tool.None) {
             RaycastHit hit;
@@ -30,6 +44,7 @@ public class Inventar : MonoBehaviour
                 Vector3 stepPosition = generator.getIndexFromPositionRasterd(hit.point);
 
                 selectedPosition = stepPosition;
+                selectedDirection = viewer.transform.TransformDirection(Vector3.forward);
                 generator.mat.SetVector("_Selected", stepPosition);
             }
             else
@@ -43,44 +58,60 @@ public class Inventar : MonoBehaviour
     }
 
     void Update(){
-
-        if(Input.mouseScrollDelta.y>0)
+        float step = generator.getStep();
+        
+        if(Input.mouseScrollDelta.y>0){
             tool = (Tool)((int)(tool +1) % Enum.GetNames(typeof(Tool)).Length);
-        else if(Input.mouseScrollDelta.y<0)
+            display.SetText(tool.ToString());
+            marker.SetActiveBox(tool == Tool.Mark || marker.isMarked());
+
+        }else if(Input.mouseScrollDelta.y<0){
             tool = (Tool)((Enum.GetNames(typeof(Tool)).Length +(int)tool-1) % Enum.GetNames(typeof(Tool)).Length);
-        
-        
-        if(Input.GetMouseButtonDown(0)&&!selectedPosition.Equals(Vector3.zero)&&(tool==Tool.ExcevateLimit||tool==Tool.BuildingLimit)){
-            isLocked = true;
-            lockData = selectedPosition.y;
-        } else if(Input.GetMouseButtonUp(0)||(tool!=Tool.ExcevateLimit&&tool!=Tool.BuildingLimit)){
-            isLocked = false;
+            display.SetText(tool.ToString());
+            marker.SetActiveBox(tool == Tool.Mark || marker.isMarked());
         }
         
-        if(Input.GetMouseButton(0)&&!selectedPosition.Equals(Vector3.zero)){
-            int numVoxelsPerAxis = generator.numPointsPerAxis-1;
-            float step = generator.boundsSize/numVoxelsPerAxis;
-
-            switch(tool){
-                case Tool.Excevate:
-                    manager.EditTerrain(selectedPosition, step*2, 0.4f);
-                    break;
-                case Tool.Building:
-                    manager.EditTerrain(selectedPosition, step*2, -0.4f);
-                    break;
-                case Tool.ExcevateLimit:
-                    if(isLocked)
-                        manager.EditTerrain(new Vector3(selectedPosition.x, Mathf.Max(lockData+step, selectedPosition.y), selectedPosition.z), step*1.5f, 0.4f);
-                    break;
-                case Tool.BuildingLimit:
-                    if(isLocked)
-                        manager.EditTerrain(new Vector3(selectedPosition.x, Mathf.Min(lockData-step, selectedPosition.y), selectedPosition.z), step*1.5f,  -0.4f);
-                    break;
-                default:
-                    break;
+        if(tool == Tool.Mark){
+            marker.selectedPosition = selectedPosition;
+            if(Input.GetMouseButton(1)){
+                marker.Reset();
             }
         }
+        
+        if(Input.GetMouseButtonDown(0)&&!selectedPosition.Equals(Vector3.zero)&&Tool.Mark==tool&& marker.needSelected()){
+            marker.AddPosition(selectedPosition);
+        } else if(Input.GetMouseButtonDown(0)&&Tool.Mark==tool&& !marker.needSelected()){
+            marker.AddPosition(selectedPosition);
+        }
+        
+        
+        if((tool==Tool.Building||tool==Tool.BuildEdge)&&!selectedPosition.Equals(Vector3.zero)){
 
+            if(Input.GetMouseButton(0)){
+                if(marker.isMarked())
+                    manager.DeleteTerrain(selectedPosition, step*2, 0.4f, typeInventory, tool==Tool.Building ? marker.isInBox : marker.isAtEdge);
+                else
+                    manager.DeleteTerrain(selectedPosition, step*2, 0.4f, typeInventory);
+            }
+            
+            if(Input.GetMouseButton(1)){
+                if(marker.isMarked())
+                    manager.AddTerrain(selectedPosition, selectedDirection, step*2, 0.1f, typeInventory, tool==Tool.Building ? marker.isInBox : marker.isAtEdge);
+                else
+                    manager.AddTerrain(selectedPosition, selectedDirection, step*2, 0.1f, typeInventory);
+     
+            }
+        }
+        //inventory display
+        
+        StringBuilder builder = new StringBuilder();
+        List<Type> types = new List<Type>(typeInventory.Keys);
+        for(int i = 0; i < typeInventory.Count; i++){
+            Type type = types[i];
+            builder.Append(type.ToString()).Append(": ").Append(typeInventory[type]).AppendLine();
+        }
+        inventoryDisplay.SetText(builder.ToString());
+        
     }
 
     void OnDrawGizmos () {
