@@ -9,8 +9,6 @@ using System.Text;
 public class Inventar : MonoBehaviour
 {
     
-    [SerializeField] TextMeshProUGUI display;
-    [SerializeField] TextMeshProUGUI inventoryDisplay;
     public Tool tool;
     public Transform viewer;
     public MeshGenerator generator;
@@ -45,7 +43,7 @@ public class Inventar : MonoBehaviour
 
                 selectedPosition = stepPosition;
                 selectedDirection = viewer.transform.TransformDirection(Vector3.forward);
-                generator.mat.SetVector("_Selected", stepPosition);
+                //generator.mat.SetVector("_Selected", stepPosition);
             }
             else
             {
@@ -62,12 +60,10 @@ public class Inventar : MonoBehaviour
         
         if(Input.mouseScrollDelta.y>0){
             tool = (Tool)((int)(tool +1) % Enum.GetNames(typeof(Tool)).Length);
-            display.SetText(tool.ToString());
             marker.SetActiveBox(tool == Tool.Mark || marker.isMarked());
 
         }else if(Input.mouseScrollDelta.y<0){
             tool = (Tool)((Enum.GetNames(typeof(Tool)).Length +(int)tool-1) % Enum.GetNames(typeof(Tool)).Length);
-            display.SetText(tool.ToString());
             marker.SetActiveBox(tool == Tool.Mark || marker.isMarked());
         }
         
@@ -110,7 +106,6 @@ public class Inventar : MonoBehaviour
             Type type = types[i];
             builder.Append(type.ToString()).Append(": ").Append(typeInventory[type]).AppendLine();
         }
-        inventoryDisplay.SetText(builder.ToString());
         
     }
 

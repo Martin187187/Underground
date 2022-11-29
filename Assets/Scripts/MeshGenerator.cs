@@ -57,7 +57,7 @@ public class MeshGenerator : MonoBehaviour {
 
     ConcurrentBag<MeshValues> chunksReadyToUpdate = new ConcurrentBag<MeshValues>();
 
-    private Color[] colorArray = {new Color(67,64, 51)/256,new Color(149,63, 8)/256,new Color(128,25, 10)/256,new Color(84,74, 74)/256,new Color(1,1, 1)};
+    private Color[] colorArray = {Color.red,Color.green,Color.blue,new Color(0,0, 0,1)};
 
     void OnEnable(){
         if (Application.isPlaying && !fixedMapSize) {
@@ -404,23 +404,8 @@ public class MeshGenerator : MonoBehaviour {
             thread.Start();
             return;
         } else {
-            Mesh mesh = chunk.mesh;
-            mesh.Clear ();
+            CalculateMeshFull(tris, numTris, chunk);
             
-            MeshValues values = CalculateMeshFull(tris, numTris, chunk);
-            
-            mesh.vertices = values.vertices;
-            mesh.normals = values.normals;
-            mesh.triangles = values.meshTriangles;
-            mesh.colors = values.colors;
-            
-            mesh.uv = values.uvs1;
-            mesh.uv2 = values.uvs2;
-            mesh.uv3 = values.uvs3;
-            mesh.uv4 = values.information;
-            
-            
-            //mesh.RecalculateNormals();
             chunk.SetUp(mat, generateColliders);
         }
     }
@@ -457,9 +442,11 @@ public class MeshGenerator : MonoBehaviour {
         return new MeshValues(chunk.coord, vertices.ToArray(), normals.ToArray(), meshTriangles.ToArray(), colors.ToArray(), uvs1.ToArray(), uvs2.ToArray(), uvs3.ToArray(), information.ToArray());
     }
 
-    public MeshValues CalculateMeshFull(Triangle[] tris, int numTris, Chunk chunk){
+    public void CalculateMeshFull(Triangle[] tris, int numTris, Chunk chunk){
         Mesh mesh = chunk.mesh;
-            
+        mesh.Clear();
+
+        mesh.subMeshCount = 4;
         var vertices = new Vector3[numTris * 3];
         var normals = new Vector3[numTris * 3];
         var meshTriangles = new int[numTris * 3];
@@ -475,13 +462,24 @@ public class MeshGenerator : MonoBehaviour {
                 vertices[i * 3 + j] = tris[i][j].position;
                 normals[i * 3 + j] = tris[i][j].normal;
                 colors[i*3+j] = colorArray[tris[i][j].data];
-                uvs1[i*3+j] = new Vector2(tris[i][j].position.x / (float)boundsSize, tris[i][j].position.z / (float)boundsSize);
+                uvs1[i*3+j] = tris[i][j].data == 0? new Vector2(1,0) : new Vector2(0,1);
                 uvs2[i*3+j] = new Vector2(tris[i][j].position.y / (float)boundsSize, tris[i][j].position.z / (float)boundsSize);
                 uvs3[i*3+j] = new Vector2(tris[i][j].position.y / (float)boundsSize, tris[i][j].position.x / (float)boundsSize);
                 information[i*3+j] = new Vector2(tris[i][j].data, 0);
             }
         }
-        return new MeshValues(chunk.coord, vertices, normals, meshTriangles, colors, uvs1, uvs2, uvs3, information);
+
+        
+        mesh.vertices = vertices;
+        mesh.normals = normals;
+        mesh.triangles = meshTriangles;
+        mesh.colors = colors;
+        
+        mesh.uv = uvs1;
+        mesh.uv2 = uvs2;
+        mesh.uv3 = uvs3;
+        mesh.uv4 = information;
+
     }
 
 
