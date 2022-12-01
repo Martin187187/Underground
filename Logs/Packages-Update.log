@@ -76,3 +76,13 @@ The following packages were added:
   com.unity.render-pipelines.high-definition@12.1.0
   com.unity.shadergraph@12.1.0
   com.unity.visualscripting@1.7.2
+
+=== Thu Dec  1 11:09:36 2022
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.render-pipelines.high-definition from version 12.1.0 to 12.1.7
+  com.unity.shadergraph from version 12.1.0 to 12.1.7
+  com.unity.visualscripting from version 1.7.2 to 1.7.8

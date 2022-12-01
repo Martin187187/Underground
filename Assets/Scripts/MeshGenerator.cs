@@ -23,7 +23,7 @@ public class MeshGenerator : MonoBehaviour {
     public bool autoUpdateInEditor = true;
     public bool autoUpdateInGame = true;
     public ComputeShader shader;
-    public Material mat;
+    public Material[] mat;
     public bool generateColliders;
 
     [Header ("Voxel Settings")]
@@ -57,6 +57,7 @@ public class MeshGenerator : MonoBehaviour {
 
     ConcurrentBag<MeshValues> chunksReadyToUpdate = new ConcurrentBag<MeshValues>();
 
+    public GameObject[] prefabs;
     private Color[] colorArray = {Color.red,Color.green,Color.blue,new Color(0,0, 0,1)};
 
     void OnEnable(){
@@ -126,7 +127,7 @@ public class MeshGenerator : MonoBehaviour {
         recycleableChunks = new Queue<Chunk> ();
         chunks = new List<Chunk> ();
         existingChunks = new Dictionary<Vector3Int, Chunk> ();
-        mat.SetFloat("_step", boundsSize/(numPointsPerAxis-1));
+        mat[0].SetFloat("_boundsize", 1/(float)boundsSize);
     }
 
     void InitVisibleChunks () {
@@ -259,19 +260,20 @@ public class MeshGenerator : MonoBehaviour {
     }
 
     public ChunkData GeneratePoints(Vector3Int coord){
-        int numVoxelsPerAxis = numPointsPerAxis - 1;
+        int add2numPointsPerAxis = numPointsPerAxis +2;
+        int numVoxelsPerAxis = add2numPointsPerAxis - 1;
         int numThreadsPerAxis = Mathf.CeilToInt (numVoxelsPerAxis / (float) threadGroupSize);
         float pointSpacing = boundsSize / (numPointsPerAxis - 1);
         Vector3 centre = CentreFromCoord (coord);
         Vector3 worldBounds = new Vector3 (numChunks.x, numChunks.y, numChunks.z) * boundsSize;
         
         
-        merchData.SetInt ("numPointsPerAxis", numPointsPerAxis);
+        merchData.SetInt ("numPointsPerAxis", add2numPointsPerAxis);
         merchData.SetBuffer (0, "points", pointsBuffer);
         merchData.Dispatch(0, numThreadsPerAxis, numThreadsPerAxis, numThreadsPerAxis);
         
         foreach(DensityGenerator gen in densityGenerator)
-            gen.Generate (dataBuffer, pointsBuffer, numPointsPerAxis, boundsSize, worldBounds, centre, offset, pointSpacing, isoLevel);
+            gen.Generate (dataBuffer, pointsBuffer, add2numPointsPerAxis, boundsSize, worldBounds, centre, offset, pointSpacing, isoLevel);
         
 
         /*
@@ -283,10 +285,10 @@ public class MeshGenerator : MonoBehaviour {
         merchData.SetFloat ("isoLevel", isoLevel);
         merchData.Dispatch(0, numThreadsPerAxis, numThreadsPerAxis, numThreadsPerAxis);
         */
-        Vector4[] data = new Vector4[numPointsPerAxis*numPointsPerAxis*numPointsPerAxis];
+        Vector4[] data = new Vector4[add2numPointsPerAxis*add2numPointsPerAxis*add2numPointsPerAxis];
         pointsBuffer.GetData(data);
         
-        int[] type = new int[numPointsPerAxis*numPointsPerAxis*numPointsPerAxis];
+        int[] type = new int[add2numPointsPerAxis*add2numPointsPerAxis*add2numPointsPerAxis];
         dataBuffer.GetData(type);
 
         return new ChunkData(data, type);
@@ -358,7 +360,7 @@ public class MeshGenerator : MonoBehaviour {
 
         chunk.isDirty = true;
 
-        int numVoxelsPerAxis = numPointsPerAxis - 1;
+        int numVoxelsPerAxis = numPointsPerAxis + 1;
         int numThreadsPerAxis = Mathf.CeilToInt (numVoxelsPerAxis / (float) threadGroupSize);
 
         Vector3Int coord = chunk.coord;
@@ -381,7 +383,7 @@ public class MeshGenerator : MonoBehaviour {
         shader.SetBuffer (0, "points", pointsBuffer);
         shader.SetBuffer (0, "triangles", triangleBuffer);
         shader.SetBuffer (0, "data", dataBuffer);
-        shader.SetInt ("numPointsPerAxis", numPointsPerAxis);
+        shader.SetInt ("numPointsPerAxis", numPointsPerAxis+2);
         shader.SetFloat ("isoLevel", isoLevel);
 
         shader.Dispatch (0, numThreadsPerAxis, numThreadsPerAxis, numThreadsPerAxis);
@@ -445,8 +447,7 @@ public class MeshGenerator : MonoBehaviour {
     public void CalculateMeshFull(Triangle[] tris, int numTris, Chunk chunk){
         Mesh mesh = chunk.mesh;
         mesh.Clear();
-
-        mesh.subMeshCount = 4;
+        chunk.clearPrefabs();
         var vertices = new Vector3[numTris * 3];
         var normals = new Vector3[numTris * 3];
         var meshTriangles = new int[numTris * 3];
@@ -455,7 +456,9 @@ public class MeshGenerator : MonoBehaviour {
         var uvs2 = new Vector2[numTris*3];
         var uvs3 = new Vector2[numTris*3];
         var information = new Vector2[numTris*3];
-
+        
+        List<Vector3> spwanablePosition = new List<Vector3>();
+        
         for (int i = 0; i < numTris; i++) {
             for (int j = 0; j < 3; j++) {
                 meshTriangles[i * 3 + j] = i * 3 + j;
@@ -466,7 +469,22 @@ public class MeshGenerator : MonoBehaviour {
                 uvs2[i*3+j] = new Vector2(tris[i][j].position.y / (float)boundsSize, tris[i][j].position.z / (float)boundsSize);
                 uvs3[i*3+j] = new Vector2(tris[i][j].position.y / (float)boundsSize, tris[i][j].position.x / (float)boundsSize);
                 information[i*3+j] = new Vector2(tris[i][j].data, 0);
+                if((Type)tris[i][j].data == Type.Dirt){
+                    spwanablePosition.Add(tris[i][j].position);
+                }
+                
             }
+
+        }
+        int counter = 0;
+        if(prefabs.Length>0)
+        while(spwanablePosition.Count>0 && counter < 2 ){
+            int index = Random.Range(0, spwanablePosition.Count);
+            int prefabIndex = Random.Range(0, prefabs.Length);
+            if(prefabs[prefabIndex]==null)
+                break;
+            chunk.addPrefab(prefabs[prefabIndex], spwanablePosition[index]);
+            counter++;
         }
 
         
@@ -479,6 +497,8 @@ public class MeshGenerator : MonoBehaviour {
         mesh.uv2 = uvs2;
         mesh.uv3 = uvs3;
         mesh.uv4 = information;
+
+         
 
     }
 
@@ -500,8 +520,8 @@ public class MeshGenerator : MonoBehaviour {
     }
 
     void CreateBuffers () {
-        int numPoints = numPointsPerAxis * numPointsPerAxis * numPointsPerAxis;
-        int numVoxelsPerAxis = numPointsPerAxis - 1;
+        int numPoints = (numPointsPerAxis+2) * (numPointsPerAxis+2) * (numPointsPerAxis+2);
+        int numVoxelsPerAxis = numPointsPerAxis + 1;
         int numVoxels = numVoxelsPerAxis * numVoxelsPerAxis * numVoxelsPerAxis;
         int maxTriangleCount = numVoxels * 5;
 

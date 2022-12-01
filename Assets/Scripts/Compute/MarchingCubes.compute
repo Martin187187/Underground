@@ -93,7 +93,7 @@ Vertex createVertex(int3 coordA, int3 coordB, int indexA, int indexB, float4 pos
 void March (int3 id : SV_DispatchThreadID)
 {   
     // Stop one point before the end because voxel includes neighbouring points
-    if (id.x >= numPointsPerAxis-1 || id.y >= numPointsPerAxis-1 || id.z >= numPointsPerAxis-1) {
+    if (id.x < 1 || id.y < 1 || id.z < 1 || id.x >= numPointsPerAxis-2 || id.y >= numPointsPerAxis-2 || id.z >= numPointsPerAxis-2) {
         return;
     }
 

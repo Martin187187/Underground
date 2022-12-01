@@ -16,6 +16,29 @@ public class Chunk : MonoBehaviour {
 
     [HideInInspector] public bool isDirty = false;
 
+    public void addPrefab(GameObject obj, Vector3 pos){
+        GameObject instance = Instantiate(obj, pos, Quaternion.identity);
+        instance.transform.parent = this.transform;
+    }
+
+    public void clearPrefabs(){
+        
+        if (Application.isPlaying )
+            foreach(Transform child in transform)
+            {
+                Destroy(child.gameObject); 
+            }
+        else
+            foreach (Transform child in transform)
+         {
+             StartCoroutine(Destroy(child.gameObject));
+         }
+    }
+    IEnumerator Destroy(GameObject go)
+     {
+        yield return null;
+        DestroyImmediate(go);
+     }
     public void DestroyOrDisable () {
         if (Application.isPlaying) {
             mesh.Clear ();
@@ -40,7 +63,7 @@ public class Chunk : MonoBehaviour {
     }
 
     // Add components/get references in case lost (references can be lost when working in the editor)
-    public void SetUp (Material mat, bool generateCollider) {
+    public void SetUp (Material[] mat, bool generateCollider) {
         this.generateCollider = generateCollider;
 
         meshFilter = GetComponent<MeshFilter> ();
@@ -81,6 +104,6 @@ public class Chunk : MonoBehaviour {
 
         }
 
-        meshRenderer.material = mat;
+        meshRenderer.materials = mat;
     }
 }
