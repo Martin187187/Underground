@@ -8,6 +8,7 @@ public class MeshManager : MonoBehaviour
     public MeshGenerator meshGenerator;
     public ChunkLoader loader;
     public Transform player;
+    public float itemMultiplicator = 0.95f;
     // Start is called before the first frame update
 
     public void DeleteTerrain(Vector3 pos, float rad, float strengh, Dictionary<Type, float> usedTypes, Func<Vector3, bool> isEmbodied = null){
@@ -42,20 +43,27 @@ public class MeshManager : MonoBehaviour
                         for(int i = 0; i < data.Length; i++) {
                             Vector3 vertexPos = new Vector3(data[i].x, data[i].y, data[i].z);
                             float distance = Vector3.Distance(pos, vertexPos);
+                            Type ty = (Type)type[i];
+                            if(distance<rad+(float)numPointsPerAxis/meshGenerator.boundsSize){
+                                
+                                if(ty == Type.Grass)
+                                    type[i] = (int)Type.Dirt;
+                            }
                             if(distance<rad){
                                 if(isEmbodied == null || isEmbodied(vertexPos)){
                                     float cappedStrengh = Mathf.Min(Mathf.Max(0,data[i].w-meshGenerator.isoLevel+0.5f), Mathf.Abs(strengh));
                                     float cappedStrengh2 = Mathf.Min(Mathf.Max(0,data[i].w-meshGenerator.isoLevel), Mathf.Abs(strengh));
                                     data[i] = new Vector4(data[i].x,data[i].y, data[i].z, data[i].w - cappedStrengh);
 
-                                    Type ty = (Type)type[i];
+
                                     if(usedTypes.ContainsKey(ty)){
                                         float value;
                                         usedTypes.TryGetValue(ty, out value);
-                                        usedTypes[ty] = value + cappedStrengh;
+                                        usedTypes[ty] = value + cappedStrengh*itemMultiplicator;
                                     } else {
-                                        usedTypes.TryAdd(ty, cappedStrengh);
+                                        usedTypes.TryAdd(ty, cappedStrengh*itemMultiplicator);
                                     }
+
 
 
                                 }
@@ -112,11 +120,11 @@ public class MeshManager : MonoBehaviour
                             if(distance<rad){
                                 if((isEmbodied == null || isEmbodied(vertexPos))&&(type[i] == (int)Type.Beton || data[i].w<meshGenerator.isoLevel)){
                                     float cappedStrengh = Mathf.Min(Mathf.Max(0,-(data[i].w-meshGenerator.isoLevel-10f)), Mathf.Abs(strengh));
-                                    if(usedTypes.ContainsKey(Type.Beton) && usedTypes[Type.Beton] >= cappedStrengh){
+                                    //if(usedTypes.ContainsKey(Type.Beton) && usedTypes[Type.Beton] >= cappedStrengh){
                                         usedTypes[Type.Beton] -= cappedStrengh;
                                         data[i] = new Vector4(data[i].x,data[i].y, data[i].z, data[i].w + cappedStrengh);
                                         type[i] = (int)Type.Beton;
-                                    }
+                                    //}
                                 }
                             }
                         });

@@ -1,4 +1,4 @@
 public enum Type
 {
-    Rock, Dirt, IronOre, Beton
+    Rock, Grass, Dirt, Beton, IronOre
 }

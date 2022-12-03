@@ -76,6 +76,7 @@ public class Chunk : MonoBehaviour {
 
         if (meshRenderer == null) {
             meshRenderer = gameObject.AddComponent<MeshRenderer> ();
+            meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.TwoSided;
         }
 
         if (meshCollider == null && generateCollider) {

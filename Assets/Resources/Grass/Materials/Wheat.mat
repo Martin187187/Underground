@@ -75,7 +75,7 @@ Material:
     - Ang: 1
     - Base: 1
     - DoublePlaned: 0
-    - Height: 1.3
+    - Height: 0.8
     - Speed: 0.26
     - _AlphaClip: 0
     - _Blend: 0
@@ -98,7 +98,7 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Surface: 0
-    - _TessellationUniform: 2.2
+    - _TessellationUniform: 3.3
     - _TranslucencyFactor: -0.17
     - _VertexColorTesselation: 0
     - _WindStrength: 0.08

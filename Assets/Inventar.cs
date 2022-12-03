@@ -8,7 +8,9 @@ using System.Text;
 
 public class Inventar : MonoBehaviour
 {
-    
+    public TextMeshProUGUI buildmode;
+    public TextMeshProUGUI inventoryText;
+
     public Tool tool;
     public Transform viewer;
     public MeshGenerator generator;
@@ -61,10 +63,12 @@ public class Inventar : MonoBehaviour
         if(Input.mouseScrollDelta.y>0){
             tool = (Tool)((int)(tool +1) % Enum.GetNames(typeof(Tool)).Length);
             marker.SetActiveBox(tool == Tool.Mark || marker.isMarked());
+            buildmode.SetText(tool.ToString());
 
         }else if(Input.mouseScrollDelta.y<0){
             tool = (Tool)((Enum.GetNames(typeof(Tool)).Length +(int)tool-1) % Enum.GetNames(typeof(Tool)).Length);
             marker.SetActiveBox(tool == Tool.Mark || marker.isMarked());
+            buildmode.SetText(tool.ToString());
         }
         
         if(tool == Tool.Mark){
@@ -106,6 +110,8 @@ public class Inventar : MonoBehaviour
             Type type = types[i];
             builder.Append(type.ToString()).Append(": ").Append(typeInventory[type]).AppendLine();
         }
+        
+        inventoryText.SetText(builder.ToString());
         
     }
 

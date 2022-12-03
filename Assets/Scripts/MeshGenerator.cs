@@ -58,7 +58,7 @@ public class MeshGenerator : MonoBehaviour {
     ConcurrentBag<MeshValues> chunksReadyToUpdate = new ConcurrentBag<MeshValues>();
 
     public GameObject[] prefabs;
-    private Color[] colorArray = {Color.red,Color.green,Color.blue,new Color(0,0, 0,1)};
+    private Color[] colorArray = {new Color(1,0, 0,0),new Color(0,1, 0,0),new Color(0,0, 1,0), new Color(0,0, 0,1), new Color(0,0,0,0)};
 
     void OnEnable(){
         if (Application.isPlaying && !fixedMapSize) {
@@ -401,7 +401,7 @@ public class MeshGenerator : MonoBehaviour {
         
         
         
-        if(false && Application.isPlaying&&!fixedMapSize){
+        if(false&&Application.isPlaying&&!fixedMapSize){
             Thread thread = new Thread(() => CalculateMeshThread( tris,  numTris, chunk));
             thread.Start();
             return;
@@ -421,7 +421,7 @@ public class MeshGenerator : MonoBehaviour {
         var uvs1 = new List<Vector2>();
         var uvs2 = new List<Vector2>();
         var uvs3 = new List<Vector2>();
-        var information = new List<Vector2>();
+        var uvs4 = new List<Vector2>();
         for (int i = 0; i < numTris; i++) {
             for (int j = 0; j < 3; j++) {
                 Vector3 currentVector = tris[i][j].position;
@@ -432,16 +432,16 @@ public class MeshGenerator : MonoBehaviour {
                     meshTriangles.Add(vertices.Count);
                     vertices.Add(currentVector);
                     normals.Add(tris[i][j].normal);
-                    colors.Add(colorArray[tris[i][j].data]);
-                    uvs1.Add(new Vector2(tris[i][j].position.x / (float)boundsSize, tris[i][j].position.z / (float)boundsSize));
-                    uvs2.Add(new Vector2(tris[i][j].position.z / (float)boundsSize, tris[i][j].position.y / (float)boundsSize));
-                    uvs3.Add(new Vector2(tris[i][j].position.y / (float)boundsSize, tris[i][j].position.x / (float)boundsSize));
-                    information.Add(new Vector2(tris[i][j].data,0));
+                    colors.Add(colorArray[Mathf.Min(4, tris[i][j].data)]);
+                    uvs1.Add(tris[i][j].data == 4 ? new Vector2(1,0) : tris[i][j].data == 5 ? new Vector2(0,1): new Vector2(0,0));
+                    uvs2.Add(tris[i][j].data == 6 ? new Vector2(1,0) : tris[i][j].data == 7 ? new Vector2(0,1): new Vector2(0,0));
+                    uvs3.Add(tris[i][j].data == 8 ? new Vector2(1,0) : tris[i][j].data == 9 ? new Vector2(0,1): new Vector2(0,0));
+                    uvs4.Add(tris[i][j].data == 10 ? new Vector2(1,0) : tris[i][j].data == 11 ? new Vector2(0,1): new Vector2(0,0));
                 }
                 
             }
         }
-        return new MeshValues(chunk.coord, vertices.ToArray(), normals.ToArray(), meshTriangles.ToArray(), colors.ToArray(), uvs1.ToArray(), uvs2.ToArray(), uvs3.ToArray(), information.ToArray());
+        return new MeshValues(chunk.coord, vertices.ToArray(), normals.ToArray(), meshTriangles.ToArray(), colors.ToArray(), uvs1.ToArray(), uvs2.ToArray(), uvs3.ToArray(), uvs4.ToArray());
     }
 
     public void CalculateMeshFull(Triangle[] tris, int numTris, Chunk chunk){
@@ -455,7 +455,7 @@ public class MeshGenerator : MonoBehaviour {
         var uvs1 = new Vector2[numTris*3];
         var uvs2 = new Vector2[numTris*3];
         var uvs3 = new Vector2[numTris*3];
-        var information = new Vector2[numTris*3];
+        var uvs4 = new Vector2[numTris*3];
         
         List<Vector3> spwanablePosition = new List<Vector3>();
         
@@ -464,12 +464,12 @@ public class MeshGenerator : MonoBehaviour {
                 meshTriangles[i * 3 + j] = i * 3 + j;
                 vertices[i * 3 + j] = tris[i][j].position;
                 normals[i * 3 + j] = tris[i][j].normal;
-                colors[i*3+j] = colorArray[tris[i][j].data];
-                uvs1[i*3+j] = tris[i][j].data == 0? new Vector2(1,0) : new Vector2(0,1);
-                uvs2[i*3+j] = new Vector2(tris[i][j].position.y / (float)boundsSize, tris[i][j].position.z / (float)boundsSize);
-                uvs3[i*3+j] = new Vector2(tris[i][j].position.y / (float)boundsSize, tris[i][j].position.x / (float)boundsSize);
-                information[i*3+j] = new Vector2(tris[i][j].data, 0);
-                if((Type)tris[i][j].data == Type.Dirt){
+                colors[i*3+j] = colorArray[Mathf.Min(4, tris[i][j].data)];
+                uvs1[i*3+j] = tris[i][j].data == 4 ? new Vector2(1,0) : tris[i][j].data == 5 ? new Vector2(0,1): new Vector2(0,0);
+                uvs2[i*3+j] = tris[i][j].data == 6 ? new Vector2(1,0) : tris[i][j].data == 7 ? new Vector2(0,1): new Vector2(0,0);
+                uvs3[i*3+j] = tris[i][j].data == 8 ? new Vector2(1,0) : tris[i][j].data == 9 ? new Vector2(0,1): new Vector2(0,0);
+                uvs4[i*3+j] = tris[i][j].data == 10 ? new Vector2(1,0) : tris[i][j].data == 11 ? new Vector2(0,1): new Vector2(0,0);
+                if((Type)tris[i][j].data == Type.Grass){
                     spwanablePosition.Add(tris[i][j].position);
                 }
                 
@@ -496,7 +496,7 @@ public class MeshGenerator : MonoBehaviour {
         mesh.uv = uvs1;
         mesh.uv2 = uvs2;
         mesh.uv3 = uvs3;
-        mesh.uv4 = information;
+        mesh.uv4 = uvs4;
 
          
 
