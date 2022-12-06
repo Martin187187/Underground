@@ -35,10 +35,8 @@ public class Inventar : MonoBehaviour
         if (tool != Tool.None) {
             RaycastHit hit;
             
-            int layerMask = 1 << 8;
-            
-            layerMask = ~layerMask;
-            if (Physics.Raycast(viewer.position, viewer.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
+            LayerMask mask = LayerMask.GetMask("Terrain");
+            if (Physics.Raycast(viewer.position, viewer.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, mask))
             {
                 Debug.DrawRay(viewer.position, viewer.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
                 Vector3 stepPosition = generator.getIndexFromPositionRasterd(hit.point);

@@ -65,7 +65,7 @@ public class Chunk : MonoBehaviour {
     // Add components/get references in case lost (references can be lost when working in the editor)
     public void SetUp (Material[] mat, bool generateCollider) {
         this.generateCollider = generateCollider;
-
+        gameObject.layer = LayerMask.NameToLayer("Terrain");
         meshFilter = GetComponent<MeshFilter> ();
         meshRenderer = GetComponent<MeshRenderer> ();
         meshCollider = GetComponent<MeshCollider> ();
