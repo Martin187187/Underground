@@ -27,6 +27,12 @@ ModelImporter:
   - first:
       74: -3209905071352208343
     second: Armature Leg 2|Base.001Action
+  - first:
+      74: 1972422226242499443
+    second: Base.001|FerrothornAction
+  - first:
+      74: -2066642816124546420
+    second: Base|Idle Animation
   externalObjects: {}
   materials:
     materialImportMode: 2

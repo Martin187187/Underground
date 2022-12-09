@@ -43,9 +43,9 @@ public class IKFootSolver : MonoBehaviour
         }
         
         this.transform.position = currentPosition;
-        Vector3 direction = castPosition.position -currentPosition;
+        Vector3 direction = (castPosition.position -currentPosition).normalized*stepDistance*0.5f;
 
-        Ray ray = new Ray(castPosition.position + Vector3.up, Vector3.down);
+        Ray ray = new Ray(castPosition.position + direction + Vector3.up, Vector3.down);
         
         if(Physics.Raycast(ray, out RaycastHit info, 10, mask)&&info.distance<2f){
             

@@ -10,7 +10,8 @@ public class Inventar : MonoBehaviour
 {
     public TextMeshProUGUI buildmode;
     public TextMeshProUGUI inventoryText;
-
+    public Transform player;
+    public Creature creature;
     public Tool tool;
     public Transform viewer;
     public MeshGenerator generator;
@@ -32,11 +33,10 @@ public class Inventar : MonoBehaviour
         typeInventory.Add(Type.Beton, 10000);
     }
     void FixedUpdate(){
-        if (tool != Tool.None) {
-            RaycastHit hit;
+        //if (tool != Tool.None) {
             
             LayerMask mask = LayerMask.GetMask("Terrain");
-            if (Physics.Raycast(viewer.position, viewer.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, mask))
+            if (Physics.Raycast(viewer.position, viewer.transform.TransformDirection(Vector3.forward), out RaycastHit hit, Mathf.Infinity, mask))
             {
                 Debug.DrawRay(viewer.position, viewer.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
                 Vector3 stepPosition = generator.getIndexFromPositionRasterd(hit.point);
@@ -50,9 +50,9 @@ public class Inventar : MonoBehaviour
                 selectedPosition = Vector3.zero;
                 Debug.DrawRay(viewer.position, viewer.transform.TransformDirection(Vector3.forward) * 1000, Color.white);
             }
+            
 
-
-        }
+        //}
     }
 
     void Update(){
@@ -100,6 +100,24 @@ public class Inventar : MonoBehaviour
      
             }
         }
+
+        if(Input.GetMouseButton(2))
+        {
+            
+            if (Physics.Raycast(viewer.position, viewer.transform.TransformDirection(Vector3.forward), out RaycastHit hit, Mathf.Infinity)){
+                if(hit.transform.CompareTag("Creature")){
+                    Creature enemy = hit.transform.gameObject.GetComponent<Creature>();
+                    creature.SetAttackTarget(enemy);
+                }
+                else
+                    creature.SetFollowPosition(selectedPosition);
+            }
+        }
+        /*
+        if(Input.GetButtonDown("l")){
+            creature.SetFollowTarget(player);
+        }
+        */
         //inventory display
         
         StringBuilder builder = new StringBuilder();
