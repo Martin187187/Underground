@@ -8,4 +8,11 @@ public class EmptyCreature : Creature
     {
         throw new System.NotImplementedException();
     }
+
+    public override void NormalAttack()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    
 }

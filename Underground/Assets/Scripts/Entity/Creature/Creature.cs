@@ -4,17 +4,54 @@ using UnityEngine;
 
 public abstract class Creature : MonoBehaviour
 {
+    protected LayerMask mask;
+    protected Rigidbody m_Rigidbody;
+    protected Animator anim;
+    protected Executer exe;
     public enum FollowMode
     {
         WAYPOINT, SILENT_FOLLOW, ATTACK_FOLLOW
     };
     public FollowMode mode = FollowMode.SILENT_FOLLOW;
-    [SerializeField] private Vector3 waypoint;
-    [SerializeField] private Transform follow;
-    [SerializeField] private Creature enemy;
+    [SerializeField] protected Vector3 waypoint;
+    [SerializeField] protected Transform follow;
+    [SerializeField] protected Creature enemy;
     public float speed = 1f;
 
+    protected float counter = 0;
+
+    //health bar
+    public HealthBar healthBar;
+
+    //stats
+    public float currentHP, maxHp = 100;
+    public float attack = 1;
+    
+
+    void Start()
+    {
+        Debug.Log("2");
+        mask = LayerMask.GetMask("Terrain");
+        m_Rigidbody = GetComponent<Rigidbody>();
+        anim = GetComponent<Animator>();
+        exe = new Executer(this);
+
+        currentHP = maxHp;
+        healthBar.SetHealth(maxHp);
+    }
+        void OnEnable()
+    {
+        exe = new Executer(this);
+    }
+
+    public abstract void NormalAttack();
     public abstract void ActivateAbilityOne();
+
+    public void TakeDamake(float damage)
+    {
+        currentHP-=damage;
+        healthBar.SetHealth(currentHP);
+    }
 
     protected Vector3 GetFollowPosition(){
         switch (mode)
@@ -44,4 +81,6 @@ public abstract class Creature : MonoBehaviour
         enemy = creature;
         mode = FollowMode.ATTACK_FOLLOW;
     }
+
+    
 }

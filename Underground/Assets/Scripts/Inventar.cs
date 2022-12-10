@@ -113,11 +113,13 @@ public class Inventar : MonoBehaviour
                     creature.SetFollowPosition(selectedPosition);
             }
         }
-        /*
-        if(Input.GetButtonDown("l")){
+        
+        if(Input.GetKeyDown(KeyCode.LeftControl)){
             creature.SetFollowTarget(player);
         }
-        */
+        if(Input.GetKeyDown(KeyCode.Alpha1)){
+            creature.ActivateAbilityOne();
+        }
         //inventory display
         
         StringBuilder builder = new StringBuilder();

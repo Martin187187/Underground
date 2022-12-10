@@ -9,6 +9,9 @@ ModelImporter:
   - first:
       74: -8945691123924629249
     second: Armature|Idle
+  - first:
+      74: -4552515205397978273
+    second: Armature|Attack1
   externalObjects: {}
   materials:
     materialImportMode: 2

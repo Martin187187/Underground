@@ -4,24 +4,19 @@ using UnityEngine;
 
 public class MonsterFollow : Creature
 {
-    private LayerMask mask;
-    private Rigidbody m_Rigidbody;
-    float counter = 0;
-    float jumpCounter = 0;
-
+    private float normalAttackCounter = 0;
     // Start is called before the first frame update
     
-    void Start()
-    {
-        Debug.Log("2");
-        mask = LayerMask.GetMask("Terrain");
-        m_Rigidbody = GetComponent<Rigidbody>();
-        
-    }
+
+
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        if(normalAttackCounter <= 2)
+        {
+            normalAttackCounter += Time.deltaTime;
+        }
         Vector3 target = GetFollowPosition();
         if(target==null)
             return;
@@ -48,20 +43,17 @@ public class MonsterFollow : Creature
             if(counter>=0.5f){
                 Vector3 test = new Vector3(transform.position.x, Mathf.Max(info.point.y+0.8f,transform.position.y), transform.position.z);
                 transform.position = Vector3.MoveTowards( transform.position, test, speed*8 * Time.deltaTime );
-                if(Vector3.Distance(transform.position, target) > 2f)
+                if(Vector3.Distance(transform.position, target) > 2f || mode == FollowMode.WAYPOINT){
                     transform.position = Vector3.MoveTowards( transform.position, target, speed * Time.deltaTime );
-                //transform.position = new Vector3(transform.position.x, Mathf.Max(info.point.y+1,transform.position.y), transform.position.z);
-
-                if(jumpCounter<10f)
-                    jumpCounter += Time.deltaTime;
-                else
-                if((Mathf.Abs(norm.x)+Mathf.Abs(norm.z))/2<Mathf.Abs(norm.y))
-                {
-                    Debug.Log("jump");
-                    jumpCounter = 0;
-                    m_Rigidbody.velocity += norm*20;
-                    
                 }
+                
+
+                    if(Vector3.Distance(transform.position, target) <= 2f && mode == FollowMode.ATTACK_FOLLOW){
+                        if(normalAttackCounter>2){
+                            normalAttackCounter = 0;
+                            NormalAttack();
+                        }
+                    }
             
             }
 
@@ -77,8 +69,36 @@ public class MonsterFollow : Creature
         }
     }
 
+
+    
+    public override void NormalAttack()
+    {
+        exe.DelayExecute(1.3f, x => {
+            enemy.GetComponent<Rigidbody>().velocity += (((Transform)x[0]).position - ((Transform)x[1]).position).normalized * 10;
+            enemy.TakeDamake(5);
+        },enemy.transform, transform);
+        anim.CrossFade("Armature|Attack1",0,0);
+        
+    }
     public override void ActivateAbilityOne()
     {
-        throw new System.NotImplementedException();
+        if(counter>=0.5f && FollowMode.ATTACK_FOLLOW == mode){
+            Vector3 direction = (enemy.transform.position - transform.position).normalized+Vector3.up*0.3f;
+            m_Rigidbody.velocity += direction * 20;
+        }
     }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if(mode == FollowMode.ATTACK_FOLLOW)
+        {
+            GameObject o = collision.collider.gameObject;
+            Creature c = o.GetComponent<Creature>();
+            if(c == enemy){
+                c.TakeDamake(collision.relativeVelocity.magnitude);
+            }
+            
+        }
+    }
+
 }
