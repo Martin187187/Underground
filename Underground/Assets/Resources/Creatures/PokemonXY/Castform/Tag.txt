@@ -1,0 +1,9 @@
+Game: Pokémon X/Y
+Subject: #351 Castform
+Copyright: Nintendo, Game Freak, Creatures Inc.
+Model Ripper: Random Talking Bush
+Hosting Permissions: The Models Resource
+Notes: Special thanks to Ploaj for supplying the necessary files for these models!
+       Castform's "shiny" textures for its alternate forms are the exact same as the
+       non-shiny ones. Additionally, Snowy Castform's translucency is complete nonsense,
+       you will need to figure out how to set up the texturing properly yourself. Sorry.

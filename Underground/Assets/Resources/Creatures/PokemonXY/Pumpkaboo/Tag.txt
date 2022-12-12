@@ -1,0 +1,8 @@
+Game: Pokémon X/Y
+Subject: #710 Pumpkaboo
+Copyright: Nintendo, Game Freak, Creatures Inc.
+Model Ripper: Random Talking Bush
+Hosting Permissions: The Models Resource
+Notes: Special thanks to Ploaj for supplying the necessary files for these models!
+       Also, interestingly enough the files for the Average/Large Sizes are no different
+       than the Small Size, the Super Size is the only one that's physically changed. Huh.

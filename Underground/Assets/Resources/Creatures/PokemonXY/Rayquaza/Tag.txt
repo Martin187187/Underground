@@ -1,0 +1,9 @@
+Game: Pokémon X/Y
+      Pokémon Omega Ruby/Alpha Sapphire
+Subject: #384 Rayquaza
+Copyright: Nintendo, Game Freak, Creatures Inc.
+Model Ripper: Random Talking Bush
+Hosting Permissions: The Models Resource
+Notes: Special thanks to Ploaj for supplying the necessary files for these models!
+       Also, the rigging for the "FingerC" bones for the regular Rayquaza were
+	   modified from the original to match the rest, since they were pretty awful.

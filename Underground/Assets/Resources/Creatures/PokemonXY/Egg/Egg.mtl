@@ -1,0 +1,23 @@
+# Blender MTL File: 'Object Lighting for VG Resource thumbnails.blend'
+# Material Count: 2
+
+newmtl pm0000_00_egg.png
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.492990 0.369028 0.620142
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Textures\pm0000_00_egg.png
+
+newmtl pm0000_00_eggcrack01.png
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.622303 0.902125 0.891247
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd Textures\pm0000_00_eggcrack01.png
+map_d Textures\pm0000_00_eggcrack01.png

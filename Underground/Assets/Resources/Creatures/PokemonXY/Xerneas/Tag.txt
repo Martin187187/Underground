@@ -1,0 +1,8 @@
+Game: Pokémon X/Y
+Subject: #716 Xerneas
+Copyright: Nintendo, Game Freak, Creatures Inc.
+Model Ripper: Random Talking Bush
+Hosting Permissions: The Models Resource
+Notes: Special thanks to Ploaj for supplying the necessary files for these models!
+       Also, the texture used for the "Active" form is edited, not the actual one, it
+       doesn't seem to be in its files. It's probably a material effect for all I know...

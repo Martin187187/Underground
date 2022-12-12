@@ -1,0 +1,8 @@
+Game: Pokémon X/Y
+      Pokémon Omega Ruby / Alpha Sapphire
+Subject: #323 Camerupt
+Copyright: Nintendo, Game Freak, Creatures Inc.
+Model Ripper: Random Talking Bush
+Hosting Permissions: The Models Resource
+Notes: Special thanks to Ploaj for supplying the necessary files for these models!
+       ...Don't ask me how the texture layers work for Mega Camerupt's magma. I have no clue.

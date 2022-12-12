@@ -1,0 +1,8 @@
+Game: Pokémon X/Y
+Subject: #699 Aurorus
+Copyright: Nintendo, Game Freak, Creatures Inc.
+Model Ripper: Random Talking Bush
+Hosting Permissions: The Models Resource
+Notes: Special thanks to Ploaj for supplying the necessary files for these models!
+       Also, the "End" bones were deleted from the SMD file due to the format not
+       working properly with any model that has over 128 bones... FBX/DAE has 'em. 

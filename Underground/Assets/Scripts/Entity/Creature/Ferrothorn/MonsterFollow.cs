@@ -6,7 +6,8 @@ public class MonsterFollow : Creature
 {
     private float normalAttackCounter = 0;
     // Start is called before the first frame update
-    
+    public float rotationStrength = 2f;
+    public float floatStrength = 8f;
 
 
 
@@ -42,7 +43,7 @@ public class MonsterFollow : Creature
             Vector3 norm = direction.normalized;
             if(counter>=0.5f){
                 Vector3 test = new Vector3(transform.position.x, Mathf.Max(info.point.y+0.8f,transform.position.y), transform.position.z);
-                transform.position = Vector3.MoveTowards( transform.position, test, speed*8 * Time.deltaTime );
+                transform.position = Vector3.MoveTowards( transform.position, test, speed*floatStrength * Time.deltaTime );
                 if(Vector3.Distance(transform.position, target) > 2f || mode == FollowMode.WAYPOINT){
                     transform.position = Vector3.MoveTowards( transform.position, target, speed * Time.deltaTime );
                 }
@@ -62,7 +63,7 @@ public class MonsterFollow : Creature
             direction.y = 0;
             Quaternion toRotation = Quaternion.LookRotation(direction);
             toRotation *= Quaternion.Euler(0, -90, 0);
-            transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, Time.deltaTime *2);
+            transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, Time.deltaTime *rotationStrength);
 
             
             //m_Rigidbody.MoveRotation(toRotation);

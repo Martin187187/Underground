@@ -1,0 +1,93 @@
+# Blender MTL File: 'suicune.blend'
+# Material Count: 7
+
+newmtl BodyA
+Ns -1.960784
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd BodyA1_0.png
+map_Ks pm0245_00_BodyA2.png
+map_Disp pm0245_00_BodyANor.png
+map_Ns pm0245_00_BodyA2.png
+
+newmtl BodyASpc00
+Ns -1.960784
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd BodyA1_0.png
+map_Ks pm0245_00_BodyA2.png
+map_Disp pm0245_00_BodyANor.png
+map_Ns pm0245_00_BodyA2.png
+
+newmtl BodyASpc01
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd BodyA1_0.png
+map_Ks pm0245_00_BodyA2.png
+map_Disp pm0245_00_BodyANor.png
+map_Ns pm0245_00_BodyA2.png
+
+newmtl BodyAVco
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd BodyA1_0.png
+map_Ks pm0245_00_BodyA2.png
+map_Disp pm0245_00_BodyANor.png
+map_Ns pm0245_00_BodyA2.png
+
+newmtl BodyB
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd BodyB1_0.png
+map_Ks pm0245_00_BodyB2.png
+map_Disp pm0245_00_BodyBNor.png
+map_Ns pm0245_00_BodyB2.png
+
+newmtl Eye
+Ns -1.960784
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Eye1_0.png
+map_Ks pm0245_00_Eye2.png
+map_Disp pm0245_00_EyeNor.png
+map_Ns pm0245_00_Eye2.png
+
+newmtl Eye01
+Ns -1.960784
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Eye1_0.png
+map_Ks pm0245_00_Eye2.png
+map_Disp pm0245_00_EyeNor.png
+map_Ns pm0245_00_Eye2.png
