@@ -35,9 +35,9 @@ public class IKFootSolver2 : MonoBehaviour
     {
         if(!run)
             return;
+        /*
         Vector3 vel = m_Rigidbody.velocity;
         vel.y = 0;
-        /*
         if(vel.magnitude>0.3f){
             counter = 0;
             isJump = false;
@@ -52,7 +52,6 @@ public class IKFootSolver2 : MonoBehaviour
         */
         
         this.transform.position = currentPosition;
-        Vector3 direction = (castPosition.position -currentPosition).normalized*stepDistance*1f;
 
         Ray ray = new Ray(castPosition.position + body.forward*stepDistance*.33f + Vector3.up, Vector3.down);
         
@@ -103,7 +102,7 @@ public class IKFootSolver2 : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Vector3 direction = castPosition.position -currentPosition;
+        Vector3 direction = body.forward*stepDistance*.33f;
         Gizmos.DrawSphere(castPosition.position + direction, 0.2f);
     }
 }

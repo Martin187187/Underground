@@ -26,6 +26,10 @@ public abstract class Creature : MonoBehaviour
     //stats
     public float currentHP, maxHp = 100;
     public float attack = 1;
+
+    public Status status = Status.IDLE;
+    public List<IKFootSolver2> brothers = new List<IKFootSolver2>();
+    public float followDistance = 4f;
     
 
     void Start()
@@ -81,6 +85,14 @@ public abstract class Creature : MonoBehaviour
         enemy = creature;
         mode = FollowMode.ATTACK_FOLLOW;
     }
+    
+    public enum Status{
+        IDLE, WAITING, ANIMATION_STOP
+    }
 
+    public void DestroyWalker()
+    {
+        Destroy(this);
+    }
     
 }

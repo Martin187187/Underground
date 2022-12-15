@@ -8,10 +8,11 @@ using System.Text;
 
 public class Inventar : MonoBehaviour
 {
+    public ConcreateFactoryCreature factory;
     public TextMeshProUGUI buildmode;
     public TextMeshProUGUI inventoryText;
     public Transform player;
-    public Creature creature;
+    public Creature enemy;
     public Tool tool;
     public Transform viewer;
     public MeshGenerator generator;
@@ -56,6 +57,13 @@ public class Inventar : MonoBehaviour
     }
 
     void Update(){
+
+        Creature creature = factory.GetCreature();
+        if(creature == null)
+        {
+            creature = enemy;
+        }
+        
         float step = generator.getStep();
         
         if(Input.mouseScrollDelta.y>0){
@@ -119,6 +127,10 @@ public class Inventar : MonoBehaviour
         }
         if(Input.GetKeyDown(KeyCode.Alpha1)){
             creature.ActivateAbilityOne();
+        }
+        if(Vector3.zero != selectedPosition && Input.GetKeyDown(KeyCode.B))
+        {
+            factory.CreateRandomCreature(selectedPosition);
         }
         //inventory display
         

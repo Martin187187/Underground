@@ -5,28 +5,23 @@ using UnityEngine;
 public class Walking : Creature
 {
     private float normalAttackCounter = 0;
-    // Start is called before the first frame update
     public float rotationStrength = 2f;
-    public float floatStrength = 8f;
-    public float floatHeight = 3f;
+    public float floatHeight = 0f;
 
-    public List<IKFootSolver2> brothers = new List<IKFootSolver2>();
-
-    public Status status = Status.IDLE;
     // Update is called once per frame
     void FixedUpdate()
     {
         Vector3 target = GetFollowPosition();
         if(target==null)
             return;
-        if(status == Status.WAITING_STOP)
+        if(status == Status.ANIMATION_STOP)
             return;
         if(status == Status.WAITING)
         {
-            if(Vector3.Distance(transform.position, target) < 5f)
+            if(Vector3.Distance(transform.position, target) < followDistance+1f)
                 return;
             
-            status = Status.WAITING_STOP;
+            status = Status.ANIMATION_STOP;
             anim.CrossFade("waiting_stop",0,0);
             exe.DelayExecute(1f, x => {
                 status = Status.IDLE;
@@ -42,13 +37,13 @@ public class Walking : Creature
             normalAttackCounter += Time.deltaTime;
         }
         
-
+        /*
         Vector3 vel = m_Rigidbody.velocity;
         vel.y = 0;
         if(vel.magnitude>0.3f){
             counter = 0;
-            
-        } else if(counter <=0.5f){
+        } else
+        */     if(counter <=0.5f){
             counter += Time.deltaTime;
             
         } else {
@@ -62,10 +57,12 @@ public class Walking : Creature
             Vector3 direction = target - transform.position;
             Vector3 norm = direction.normalized;
             if(counter>=0.5f){
-                Vector3 test = new Vector3(transform.position.x, Mathf.Max(info.point.y+floatHeight,transform.position.y), transform.position.z);
-            transform.position = test;
+                //float max = Mathf.Max(info.point.y+floatHeight,transform.position.y);
+                float max = info.point.y+floatHeight;
+                Vector3 test = new Vector3(transform.position.x, max, transform.position.z);
+                transform.position = Vector3.MoveTowards(transform.position, test, speed * Time.deltaTime );
                 
-                if(Vector3.Distance(transform.position, target) > 4f || mode == FollowMode.WAYPOINT){
+                if(Vector3.Distance(transform.position, target) > followDistance || mode == FollowMode.WAYPOINT){
                     transform.position = Vector3.MoveTowards( transform.position, target, speed * Time.deltaTime );
                 }else {
                         foreach (var item in brothers)
@@ -77,7 +74,7 @@ public class Walking : Creature
                     }
                 
 
-                    if(Vector3.Distance(transform.position, target) <= 4f && mode == FollowMode.ATTACK_FOLLOW){
+                    if(Vector3.Distance(transform.position, target) <= followDistance && mode == FollowMode.ATTACK_FOLLOW){
                         if(normalAttackCounter>2){
                             normalAttackCounter = 0;
                             NormalAttack();
@@ -115,7 +112,7 @@ public class Walking : Creature
     {
         if(counter>=0.5f && FollowMode.ATTACK_FOLLOW == mode){
             Vector3 direction = (enemy.transform.position - transform.position).normalized+Vector3.up*0.3f;
-            m_Rigidbody.velocity += direction * 20;
+            //m_Rigidbody.velocity += direction * 20;
         }
     }
 
@@ -132,8 +129,5 @@ public class Walking : Creature
         }
     }
 
-    public enum Status{
-        IDLE, WAITING, WAITING_STOP
-    }
 
 }
