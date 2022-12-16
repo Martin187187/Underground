@@ -16,7 +16,9 @@ public class ConcreateFactoryCreature : MonoBehaviour
 
     void Start()
     {
-        Creature creature = CreateCreature("Abra", new Vector3(-11.6953087f,7f,-5.6152215f));
+        Creature creature = CreateCreature("Clefable", new Vector3(-11.6953087f,7f,-5.6152215f));
+        loadedCreatureList.Add(creature);
+        CreateCreature("Abra", new Vector3(-13.6953087f,7f,-5.6152215f));
     }
     
 
@@ -30,6 +32,7 @@ public class ConcreateFactoryCreature : MonoBehaviour
         try
         {
             Creature creature = CreateCreature(data[data.Length-1], new Vector3(-11.6953087f,7f,-5.6152215f));
+            resetList(creature);
             return creature;
         }
         catch (System.Exception)
@@ -38,17 +41,41 @@ public class ConcreateFactoryCreature : MonoBehaviour
         }
         return null;
     }
+
+    public void GetMetaData(string name)
+    {        
+        string path = "Creatures/PokemonXY/"+name+"/metadata";
+        
+    }
     public Creature CreateCreature(string name, Vector3 position)
     {
-        
 
-        GameObject loadedObject = Resources.Load("Creatures/PokemonXY/"+name+"/"+name) as GameObject;
         
+        GameObject loadedObject = Resources.Load("Creatures/PokemonXY/"+name+"/"+name) as GameObject;
+
+        string name2 = name;
+        if(loadedObject == null)
+        {
+            name2 = name + "F";
+            loadedObject = Resources.Load("Creatures/PokemonXY/"+name+"/"+name2) as GameObject;
+        } 
+        if(loadedObject == null)
+        {
+            name2 = name + "_f";
+            loadedObject = Resources.Load("Creatures/PokemonXY/"+name+"/"+name2) as GameObject;
+        }
+        if(loadedObject == null)
+        {
+            name2 = name + "_F";
+            loadedObject = Resources.Load("Creatures/PokemonXY/"+name+"/"+name2) as GameObject;
+        }
+        Debug.Log(name2);
         GameObject o = Instantiate(loadedObject);
         //o.AddComponent<BoxCollider>();
         /*
         Rigidbody rigidbody = o.AddComponent<Rigidbody>();
         rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        rigidbody.useGravity = false;
         rigidbody.drag = 1.5f;
         rigidbody.angularDrag = 1.5f;
         */
@@ -57,22 +84,40 @@ public class ConcreateFactoryCreature : MonoBehaviour
         List<IKFootSolver2> solverList = BuildRig(o.transform, rigBuilder);
         BoneRenderer boneRenderer = o.AddComponent<BoneRenderer>();
         Animator animator = o.GetComponent<Animator>();
-        RuntimeAnimatorController loadedAnimatorController = Resources.Load("Creatures/PokemonXY/"+name+"/animation/"+name) as RuntimeAnimatorController;
+        RuntimeAnimatorController loadedAnimatorController = Resources.Load("Creatures/PokemonXY/"+name+"/animation/"+name2) as RuntimeAnimatorController;
         if(loadedAnimatorController!=null)
         {
             animator.runtimeAnimatorController = loadedAnimatorController;
         }
-        Transform innerObj = o.transform.Find(name);
-
-        SkinnedMeshRenderer renderer = innerObj.GetComponent<SkinnedMeshRenderer>();
+        Transform innerObj = o.transform.Find(name2);
+        
+        if(innerObj == null)
+        {
+            innerObj = o.transform.Find("default");
+        }
+        Renderer renderer = innerObj.GetComponent<Renderer>();
         Vector3 size = renderer.bounds.size;
 
         MeshCollider collider = innerObj.gameObject.AddComponent<MeshCollider>();
-        Mesh colliderMesh = new Mesh();
-        renderer.BakeMesh(colliderMesh);
-        collider.sharedMesh = null;
-        collider.sharedMesh = colliderMesh;
-        collider.convex =true;
+        if(renderer is SkinnedMeshRenderer)
+        {
+            Mesh colliderMesh = new Mesh();
+            ((SkinnedMeshRenderer)renderer).BakeMesh(colliderMesh);
+            
+            collider.sharedMesh = null;
+            collider.sharedMesh = colliderMesh;
+            collider.convex =true;
+
+        } else if(renderer is MeshRenderer)
+        {
+            MeshFilter filter = innerObj.GetComponent<MeshFilter>();
+            if(filter != null)
+            {
+                collider.sharedMesh = null;
+                collider.sharedMesh = filter.mesh;
+                collider.convex =true;
+            }
+        }
         
         
         GameObject loadedHealthbarObject = Resources.Load("Creatures/Healthbar Canvas") as GameObject;
@@ -88,14 +133,9 @@ public class ConcreateFactoryCreature : MonoBehaviour
         defaultCrature.followDistance = size.magnitude/2+1;
         defaultCrature.SetFollowTarget(GameObject.Find("Player").transform);
         defaultCrature.transform.position = position;
-        
-        foreach (var item in loadedCreatureList)
-        {
-            Destroy(item.gameObject);
-        }
-        
-        loadedCreatureList.Clear();
-        loadedCreatureList.Add(defaultCrature);
+        defaultCrature.center = collider.bounds.center;
+        defaultCrature.size = Mathf.Max(Mathf.Max(collider.bounds.size.x),collider.bounds.size.y, collider.bounds.size.z)/2+0.5f;
+        defaultCrature.tag = "Creature";
         return defaultCrature;
     }
 
@@ -140,7 +180,6 @@ public class ConcreateFactoryCreature : MonoBehaviour
             {
                 arr[0] = new WeightedTransform(rArmSolver.transform, 1f);
                 arr[1] = new WeightedTransform(lArmSolver.transform, 1f);
-                Debug.Log("add");
             }
         }
         if(rLegSolver!=null && lLegSolver!=null){
@@ -252,5 +291,16 @@ public class ConcreateFactoryCreature : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void resetList(Creature creature)
+    {
+        foreach (var item in loadedCreatureList)
+            {
+                Destroy(item.gameObject);
+            }
+            
+        loadedCreatureList.Clear();
+        loadedCreatureList.Add(creature);
     }
 }

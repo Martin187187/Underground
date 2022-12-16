@@ -18,7 +18,7 @@ public class Walking : Creature
             return;
         if(status == Status.WAITING)
         {
-            if(Vector3.Distance(transform.position, target) < followDistance+1f)
+            if(Vector3.Distance(transform.position + center, target) < size+2f)
                 return;
             
             status = Status.ANIMATION_STOP;
@@ -62,24 +62,25 @@ public class Walking : Creature
                 Vector3 test = new Vector3(transform.position.x, max, transform.position.z);
                 transform.position = Vector3.MoveTowards(transform.position, test, speed * Time.deltaTime );
                 
-                if(Vector3.Distance(transform.position, target) > followDistance || mode == FollowMode.WAYPOINT){
+                if(Vector3.Distance(transform.position +center, target) >  ((mode == FollowMode.ATTACK_FOLLOW) ? size + enemy.size : size) || mode == FollowMode.WAYPOINT){
                     transform.position = Vector3.MoveTowards( transform.position, target, speed * Time.deltaTime );
-                }else {
-                        foreach (var item in brothers)
-                        {
-                            item.run = false;
-                        }
-                        anim.CrossFade("waiting_start",0,0);
-                        status = Status.WAITING;
+                }else 
+                {
+                    foreach (var item in brothers)
+                    {
+                        item.run = false;
                     }
+                    anim.CrossFade("waiting_start",0,0);
+                    status = Status.WAITING;
+                }
                 
 
-                    if(Vector3.Distance(transform.position, target) <= followDistance && mode == FollowMode.ATTACK_FOLLOW){
-                        if(normalAttackCounter>2){
-                            normalAttackCounter = 0;
-                            NormalAttack();
-                        }
-                    } 
+                if(mode == FollowMode.ATTACK_FOLLOW && Vector3.Distance(transform.position +center, target) <= size + enemy.size ){
+                    if(normalAttackCounter>2){
+                        normalAttackCounter = 0;
+                        NormalAttack();
+                    }
+                } 
             
             }
 
@@ -118,6 +119,7 @@ public class Walking : Creature
 
     void OnCollisionEnter(Collision collision)
     {
+        /*
         if(mode == FollowMode.ATTACK_FOLLOW)
         {
             GameObject o = collision.collider.gameObject;
@@ -127,6 +129,7 @@ public class Walking : Creature
             }
             
         }
+        */
     }
 
 

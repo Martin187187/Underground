@@ -31,10 +31,11 @@ public abstract class Creature : MonoBehaviour
     public List<IKFootSolver2> brothers = new List<IKFootSolver2>();
     public float followDistance = 4f;
     
+    public Vector3 center;
+    public float size;
 
     void Start()
     {
-        Debug.Log("2");
         mask = LayerMask.GetMask("Terrain");
         m_Rigidbody = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
@@ -63,7 +64,7 @@ public abstract class Creature : MonoBehaviour
             case FollowMode.SILENT_FOLLOW:
                 return follow ? follow.transform.position : transform.position;
             case FollowMode.ATTACK_FOLLOW:
-                return enemy ? enemy.transform.position : transform.position;            
+                return enemy ? enemy.transform.position+enemy.center : transform.position;            
             default:
                 return waypoint;
         }
@@ -95,4 +96,9 @@ public abstract class Creature : MonoBehaviour
         Destroy(this);
     }
     
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(1,0,0,0.2f);
+        Gizmos.DrawSphere(transform.position + center, size);
+    }
 }
