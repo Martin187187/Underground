@@ -123,11 +123,14 @@ public class MeshGenerator : MonoBehaviour {
         }
     }
 
+    
+
     void InitVariableChunkStructures () {
         recycleableChunks = new Queue<Chunk> ();
         chunks = new List<Chunk> ();
         existingChunks = new Dictionary<Vector3Int, Chunk> ();
         mat[0].SetFloat("_boundsize", 1/(float)boundsSize);
+        mat[1].SetFloat("_TessellationUniform", (boundsSize/numPointsPerAxis)*4);
     }
 
     void InitVisibleChunks () {
@@ -200,13 +203,18 @@ public class MeshGenerator : MonoBehaviour {
         }
     }
 
+    public Vector3Int getChunkCoords(Vector3 position){
+        Vector3 ps = position / boundsSize;
+        Vector3Int coord = new Vector3Int (Mathf.RoundToInt (ps.x), Mathf.RoundToInt (ps.y), Mathf.RoundToInt (ps.z));
+        return coord;
+    }
     public bool IsVisibleFrom (Bounds bounds, Camera camera) {
         Plane[] planes = GeometryUtility.CalculateFrustumPlanes (camera);
         return GeometryUtility.TestPlanesAABB (planes, bounds);
     }
 
     public bool EditTerrain(Vector3Int coord){
-        if (!existingChunks.ContainsKey (coord))
+        if (existingChunks == null || !existingChunks.ContainsKey (coord))
             return false;
         
         Chunk chunk = existingChunks[coord];
@@ -355,7 +363,10 @@ public class MeshGenerator : MonoBehaviour {
         MeshValues values = CalculateMesh(tris, numTris, chunk);
         chunksReadyToUpdate.Add(values);
     }
-
+    public bool IsLoadedChunk(Vector3Int index)
+    {
+        return existingChunks.ContainsKey(index);
+    }
     public void UpdateChunkMesh (Chunk chunk) {
 
         chunk.isDirty = true;

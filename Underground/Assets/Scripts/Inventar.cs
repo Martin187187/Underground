@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -12,7 +11,7 @@ public class Inventar : MonoBehaviour
     public TextMeshProUGUI buildmode;
     public TextMeshProUGUI inventoryText;
     public Transform player;
-    public Creature enemy;
+    public Creature creature;
     public Tool tool;
     public Transform viewer;
     public MeshGenerator generator;
@@ -22,15 +21,14 @@ public class Inventar : MonoBehaviour
     public Vector3 selectedDirection = Vector3.zero;
 
     public Marker marker;
-
-    private bool isLocked = false;
-    private float lockData;
     public enum Tool{
         None, Building, BuildEdge, Mark
     };
     public Dictionary<Type, float> typeInventory = new Dictionary<Type, float>();
 
+
     void OnEnable(){
+        creature = factory.CreateCreature("Abra", new Vector3(-11.6953087f,7f,-5.6152215f));
         typeInventory.Add(Type.Beton, 10000);
     }
     void FixedUpdate(){
@@ -58,10 +56,27 @@ public class Inventar : MonoBehaviour
 
     void Update(){
 
-        Creature creature = factory.GetCreature();
-        if(creature == null)
+        GameObject[] creatures = GameObject.FindGameObjectsWithTag("Creature");
+        if(creatures.Length< 5)
         {
-            creature = enemy;
+            float rdmNumber = generator.viewDistance;
+            float x = UnityEngine.Random.Range(-rdmNumber, rdmNumber);
+            float z = UnityEngine.Random.Range(-rdmNumber, rdmNumber);
+            Vector3 randomPos = player.transform.position + new Vector3(x, 20, z);
+            LayerMask mask = LayerMask.GetMask("Terrain");
+            if (Physics.Raycast(randomPos, Vector3.down, out RaycastHit hit, Mathf.Infinity, mask))
+            {
+            factory.CreateRandomCreature(hit.point);
+            }
+        }
+        for(int i = 0; i < creatures.Length; i++)
+        {
+            GameObject o = creatures[i];
+            Vector3Int chunckIndex = generator.getChunkCoords(o.transform.position);
+            if(!generator.IsLoadedChunk(chunckIndex))
+            {
+                Destroy(o);
+            }
         }
         
         float step = generator.getStep();
@@ -109,7 +124,7 @@ public class Inventar : MonoBehaviour
             }
         }
 
-        if(Input.GetMouseButton(2))
+        if(Input.GetKeyDown(KeyCode.KeypadEnter))
         {
             
             if (Physics.Raycast(viewer.position, viewer.transform.TransformDirection(Vector3.forward), out RaycastHit hit, Mathf.Infinity)){
@@ -128,9 +143,13 @@ public class Inventar : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Alpha1)){
             creature.ActivateAbilityOne();
         }
+        
+        if(Input.GetKeyDown(KeyCode.Alpha2)){
+            creature.ActivateAbilityTwo();
+        }
         if(Vector3.zero != selectedPosition && Input.GetKeyDown(KeyCode.B))
         {
-            factory.CreateRandomCreature(selectedPosition);
+            creature = factory.CreateRandomCreature(selectedPosition);
         }
         //inventory display
         

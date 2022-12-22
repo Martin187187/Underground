@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class IKFootSolver2 : MonoBehaviour
 {
     public Transform body;
     public Transform castPosition;
-
+    public Transform tip;
+    public float maxStepLength;
     public float stepDistance = 1f;
     public float speed = 1f;
     public float stepHeight = 0.3f;
@@ -15,10 +17,9 @@ public class IKFootSolver2 : MonoBehaviour
     private float lerp;
 
     private LayerMask mask;
-    private Rigidbody m_Rigidbody;
-    float counter = 0;
     private bool isJump = false;
-
+    private float counter = 1;
+    
     public List<IKFootSolver2> brothers = new List<IKFootSolver2>();
 
     public bool run = true;
@@ -27,29 +28,19 @@ public class IKFootSolver2 : MonoBehaviour
     {
         newPosition = body.position + castPosition.position;
         mask = LayerMask.GetMask("Terrain");
-        m_Rigidbody = body.GetComponent<Rigidbody>();
     }
 
+
     // Update is called once per frame
-    void FixedUpdate()
+    public void Run(bool IsStunned)
     {
-        if(!run)
-            return;
-        /*
-        Vector3 vel = m_Rigidbody.velocity;
-        vel.y = 0;
-        if(vel.magnitude>0.3f){
-            counter = 0;
-            isJump = false;
-            currentPosition = this.transform.position;
+        if(IsStunned)
+        {
             oldPosition = this.transform.position;
-            return;
-        } else if(counter <=0.5f){
-            counter += Time.deltaTime;
+            isJump = false;
             lerp = 0;
             return;
         }
-        */
         
         this.transform.position = currentPosition;
 
@@ -61,7 +52,11 @@ public class IKFootSolver2 : MonoBehaviour
             {
                 isJump = true;
                 oldPosition = this.transform.position;
-                newPosition = info.point + Vector3.up * 0.24f;
+                float distance = Vector3.Distance(tip.position, info.point);
+                float scale = Mathf.Min(maxStepLength/distance,1);
+                Vector3 direction = info.point - tip.position;
+
+                newPosition = tip.position + direction * scale;
                 lerp = 0;
             }
         }

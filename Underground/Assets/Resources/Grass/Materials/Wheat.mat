@@ -98,7 +98,7 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Surface: 0
-    - _TessellationUniform: 1.2
+    - _TessellationUniform: 8
     - _TranslucencyFactor: -0.17
     - _VertexColorTesselation: 0
     - _WindStrength: 0.08

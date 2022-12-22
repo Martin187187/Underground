@@ -6,20 +6,7 @@ using UnityEngine.Animations.Rigging;
 
 public class ConcreateFactoryCreature : MonoBehaviour
 {
-    List<Creature> loadedCreatureList;
-    float counter = 0;
 
-    void OnEnable()
-    {
-        loadedCreatureList = new List<Creature>();
-    }
-
-    void Start()
-    {
-        Creature creature = CreateCreature("Clefable", new Vector3(-11.6953087f,7f,-5.6152215f));
-        loadedCreatureList.Add(creature);
-        CreateCreature("Abra", new Vector3(-13.6953087f,7f,-5.6152215f));
-    }
     
 
     public Creature CreateRandomCreature(Vector3 position)
@@ -31,8 +18,7 @@ public class ConcreateFactoryCreature : MonoBehaviour
 
         try
         {
-            Creature creature = CreateCreature(data[data.Length-1], new Vector3(-11.6953087f,7f,-5.6152215f));
-            resetList(creature);
+            Creature creature = CreateCreature(data[data.Length-1], position);
             return creature;
         }
         catch (System.Exception)
@@ -72,13 +58,14 @@ public class ConcreateFactoryCreature : MonoBehaviour
         Debug.Log(name2);
         GameObject o = Instantiate(loadedObject);
         //o.AddComponent<BoxCollider>();
-        /*
+        
         Rigidbody rigidbody = o.AddComponent<Rigidbody>();
-        rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        
+        rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
         rigidbody.useGravity = false;
         rigidbody.drag = 1.5f;
         rigidbody.angularDrag = 1.5f;
-        */
+        
         RigBuilder rigBuilder = o.AddComponent<RigBuilder>();
         
         List<IKFootSolver2> solverList = BuildRig(o.transform, rigBuilder);
@@ -98,24 +85,34 @@ public class ConcreateFactoryCreature : MonoBehaviour
         Renderer renderer = innerObj.GetComponent<Renderer>();
         Vector3 size = renderer.bounds.size;
 
-        MeshCollider collider = innerObj.gameObject.AddComponent<MeshCollider>();
+        //MeshCollider collider = innerObj.gameObject.AddComponent<MeshCollider>();
+        BoxCollider collider = o.AddComponent<BoxCollider>();
         if(renderer is SkinnedMeshRenderer)
         {
+            /*
             Mesh colliderMesh = new Mesh();
             ((SkinnedMeshRenderer)renderer).BakeMesh(colliderMesh);
             
             collider.sharedMesh = null;
             collider.sharedMesh = colliderMesh;
             collider.convex =true;
+            */
+            collider.center = renderer.bounds.center;
+            collider.size = renderer.bounds.size;
+
 
         } else if(renderer is MeshRenderer)
         {
             MeshFilter filter = innerObj.GetComponent<MeshFilter>();
             if(filter != null)
             {
+                /*
                 collider.sharedMesh = null;
                 collider.sharedMesh = filter.mesh;
                 collider.convex =true;
+                */
+                collider.center = renderer.bounds.center;
+                collider.size = renderer.bounds.size;
             }
         }
         
@@ -126,16 +123,19 @@ public class ConcreateFactoryCreature : MonoBehaviour
         HealthBar bar = healthbarObject.transform.GetChild(0).GetComponent<HealthBar>();
         
         Creature defaultCrature = o.AddComponent<Walking>();
-        healthbarObject.transform.parent = defaultCrature.transform;
+        healthbarObject.transform.SetParent(defaultCrature.transform);
         defaultCrature.healthBar = bar;
         defaultCrature.speed = size.magnitude/4;
         defaultCrature.brothers = solverList;
         defaultCrature.followDistance = size.magnitude/2+1;
         defaultCrature.SetFollowTarget(GameObject.Find("Player").transform);
+        defaultCrature.SetFollowPosition(position);
         defaultCrature.transform.position = position;
         defaultCrature.center = collider.bounds.center;
         defaultCrature.size = Mathf.Max(Mathf.Max(collider.bounds.size.x),collider.bounds.size.y, collider.bounds.size.z)/2+0.5f;
         defaultCrature.tag = "Creature";
+        defaultCrature.rHand = CustomFindChild("RHand", o.transform);
+        
         return defaultCrature;
     }
 
@@ -146,7 +146,7 @@ public class ConcreateFactoryCreature : MonoBehaviour
         rigGameObject.transform.parent = root;
         rigGameObject.transform.localPosition = Vector3.zero;
         Rig rig = rigGameObject.AddComponent<Rig>();
-
+        rig.weight = 1f;
         //rarm
         IKFootSolver2 rArmSolver = create2Bone(root, rigGameObject.transform, new string[]{"RArm", "RForeArm", "RHand"});
         IKFootSolver2 lArmSolver = create2Bone(root, rigGameObject.transform, new string[]{"LArm", "LForeArm", "LHand"});
@@ -227,29 +227,33 @@ public class ConcreateFactoryCreature : MonoBehaviour
         rArmConstraintGameObject.transform.parent = rigTransform;
         rArmConstraintGameObject.transform.localPosition = Vector3.zero;
         
+        
+        GameObject rHandTipConstraintGameObject = new GameObject("tip");
+        rHandTipConstraintGameObject.transform.parent = rArmConstraintGameObject.transform;
+        rHandTipConstraintGameObject.transform.localPosition = rHandTipConstraintGameObject.transform.localPosition + rArm.position;
+
         GameObject rHandTargetConstraintGameObject = new GameObject("target");
         rHandTargetConstraintGameObject.transform.parent = rArmConstraintGameObject.transform;
-        //rHandTargetConstraintGameObject.transform.localScale *= 0.1f;
-        rHandTargetConstraintGameObject.transform.localPosition = rHandTargetConstraintGameObject.transform.localPosition + rArm.position;
+        rHandTargetConstraintGameObject.transform.localPosition = rHandTargetConstraintGameObject.transform.localPosition + rHand.position;
                 
         GameObject rHandCastConstraintGameObject = new GameObject("cast");
         rHandCastConstraintGameObject.transform.parent = rArmConstraintGameObject.transform;
-        //rHandCastConstraintGameObject.transform.localScale *= 0.1f;
         rHandCastConstraintGameObject.transform.localPosition = rHandCastConstraintGameObject.transform.localPosition + rHand.position;
         
         IKFootSolver2 rArmSolver = rHandTargetConstraintGameObject.AddComponent<IKFootSolver2>();
         rArmSolver.body = root;
         rArmSolver.castPosition = rHandCastConstraintGameObject.transform;
+        rArmSolver.tip = rHandTipConstraintGameObject.transform;
+        rArmSolver.maxStepLength = Vector3.Distance(rHandTipConstraintGameObject.transform.position, rHandTargetConstraintGameObject.transform.position);
 
         
         float magnitude = (rHand.position - rArm.position).magnitude;
         GameObject rHandHintConstraintGameObject = new GameObject("hint");
         rHandHintConstraintGameObject.transform.parent = rArmConstraintGameObject.transform;
-        //rHandHintConstraintGameObject.transform.localScale *= 0.1f;
         rHandHintConstraintGameObject.transform.localPosition+= rHand.position + new Vector3(0,1,1) * magnitude;
 
         rArmSolver.stepDistance = magnitude*1.5f;
-        rArmSolver.speed = 1/magnitude+1f;
+        rArmSolver.speed = 1/magnitude+2f;
         rArmSolver.stepHeight = magnitude*0.75f;
 
         TwoBoneIKConstraint rhandConstraint = rArmConstraintGameObject.AddComponent<TwoBoneIKConstraint>();
@@ -266,12 +270,7 @@ public class ConcreateFactoryCreature : MonoBehaviour
         return rArmSolver;
     }
 
-    public Creature GetCreature()
-    {
-        if(loadedCreatureList.Count>0)
-            return loadedCreatureList[0];
-        return null;
-    }
+    
     private Transform CustomFindChild(string key, Transform parent)
     {
         foreach (Transform child in parent)
@@ -293,14 +292,4 @@ public class ConcreateFactoryCreature : MonoBehaviour
         return null;
     }
 
-    public void resetList(Creature creature)
-    {
-        foreach (var item in loadedCreatureList)
-            {
-                Destroy(item.gameObject);
-            }
-            
-        loadedCreatureList.Clear();
-        loadedCreatureList.Add(creature);
-    }
 }

@@ -17,8 +17,8 @@ public class MeshManager : MonoBehaviour
         Vector3 start = new Vector3(pos.x-rad, pos.y-rad, pos.z-rad);
         Vector3 end = new Vector3(pos.x+rad, pos.y+rad, pos.z+rad);
 
-        Vector3Int startChunk = getChunkCoords(start);
-        Vector3Int endChunk = getChunkCoords(end);
+        Vector3Int startChunk = meshGenerator.getChunkCoords(start);
+        Vector3Int endChunk = meshGenerator.getChunkCoords(end);
         
         int numPointsPerAxis = meshGenerator.numPointsPerAxis;
 
@@ -86,8 +86,8 @@ public class MeshManager : MonoBehaviour
         Vector3 start = new Vector3(pos.x-rad, pos.y-rad, pos.z-rad);
         Vector3 end = new Vector3(pos.x+rad, pos.y+rad, pos.z+rad);
 
-        Vector3Int startChunk = getChunkCoords(start);
-        Vector3Int endChunk = getChunkCoords(end);
+        Vector3Int startChunk = meshGenerator.getChunkCoords(start);
+        Vector3Int endChunk = meshGenerator.getChunkCoords(end);
         
         int numPointsPerAxis = meshGenerator.numPointsPerAxis;
 
@@ -137,13 +137,6 @@ public class MeshManager : MonoBehaviour
                 }
             }
         }
-    }
-
-
-        public Vector3Int getChunkCoords(Vector3 position){
-        Vector3 ps = position / meshGenerator.boundsSize;
-        Vector3Int coord = new Vector3Int (Mathf.RoundToInt (ps.x), Mathf.RoundToInt (ps.y), Mathf.RoundToInt (ps.z));
-        return coord;
     }
 
 

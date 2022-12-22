@@ -16,6 +16,12 @@ public class Chunk : MonoBehaviour {
 
     [HideInInspector] public bool isDirty = false;
 
+    void Start()
+    {
+        LayerMask mask = LayerMask.NameToLayer("Terrain");
+        gameObject.layer = mask;
+        Physics.IgnoreLayerCollision(LayerMask.GetMask("default"), mask);
+    }
     public void addPrefab(GameObject obj, Vector3 pos){
         GameObject instance = Instantiate(obj, pos, Quaternion.identity);
         instance.transform.parent = this.transform;
@@ -65,7 +71,6 @@ public class Chunk : MonoBehaviour {
     // Add components/get references in case lost (references can be lost when working in the editor)
     public void SetUp (Material[] mat, bool generateCollider) {
         this.generateCollider = generateCollider;
-        gameObject.layer = LayerMask.NameToLayer("Terrain");
         meshFilter = GetComponent<MeshFilter> ();
         meshRenderer = GetComponent<MeshRenderer> ();
         meshCollider = GetComponent<MeshCollider> ();
@@ -106,5 +111,6 @@ public class Chunk : MonoBehaviour {
         }
 
         meshRenderer.materials = mat;
+        
     }
 }
