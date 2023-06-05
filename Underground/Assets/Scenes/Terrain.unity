@@ -746,7 +746,7 @@ MonoBehaviour:
   buildmode: {fileID: 1033865082}
   inventoryText: {fileID: 1008286092}
   player: {fileID: 1924172859}
-  enemy: {fileID: 0}
+  creature: {fileID: 0}
   tool: 0
   viewer: {fileID: 327418025}
   generator: {fileID: 1227901944}
@@ -7902,7 +7902,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: c72edcca1b8ca8c4aad4bf3db02cbb06,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.67
+      value: 7.14
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c72edcca1b8ca8c4aad4bf3db02cbb06,
         type: 3}
@@ -10189,7 +10189,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1008286091
 RectTransform:
   m_ObjectHideFlags: 0

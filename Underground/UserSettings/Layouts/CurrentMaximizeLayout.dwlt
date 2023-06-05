@@ -24,7 +24,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 1557
+  controlID: 97
 --- !u!114 &2
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -142,7 +142,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 200}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 1558
+  controlID: 98
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -167,7 +167,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 1559
+  controlID: 99
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -226,9 +226,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
-      m_LastClickedID: 0
-      m_ExpandedIDs: 26fbffff
+      m_SelectedIDs: 327f0000
+      m_LastClickedID: 32562
+      m_ExpandedIDs: 2cfbffffac7d0000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -806,22 +806,22 @@ MonoBehaviour:
     m_SkipHidden: 1
     m_SearchArea: 1
     m_Folders:
-    - Assets/Resources/Grass/Materials
+    - Assets/Samples/Animation Rigging/1.1.1/Animation Rigging Constraint Samples
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Resources/Grass/Materials
+  - Assets/Samples/Animation Rigging/1.1.1/Animation Rigging Constraint Samples
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\Frank\Documents\GitHub\Underground\Underground
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 115}
-    m_SelectedIDs: 62260100
-    m_LastClickedID: 75362
-    m_ExpandedIDs: 0000000016240100182401001a2401002824010000ca9a3b
+    scrollPos: {x: 0, y: 91}
+    m_SelectedIDs: 58240100
+    m_LastClickedID: 74840
+    m_ExpandedIDs: 000000001024010012240100142401002e2401005a2401005c24010000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -849,7 +849,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000016240100182401001a24010000ca9a3b
+    m_ExpandedIDs: 00000000102401001224010014240100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -874,9 +874,9 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 
-    m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 0
+    m_SelectedInstanceIDs: 327f0000
+    m_LastClickedInstanceID: 32562
+    m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c6230000b6590100c059010078870000ae4100003c820000caa70000a69100002ec4000000000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -965,7 +965,7 @@ MonoBehaviour:
     m_SaveData: []
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: -348892
+  m_LastSelectedObjectID: 32562
 --- !u!114 &14
 MonoBehaviour:
   m_ObjectHideFlags: 52

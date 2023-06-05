@@ -57,6 +57,7 @@ public class Inventar : MonoBehaviour
     void Update(){
 
         GameObject[] creatures = GameObject.FindGameObjectsWithTag("Creature");
+        /*
         if(creatures.Length< 5)
         {
             float rdmNumber = generator.viewDistance;
@@ -69,6 +70,7 @@ public class Inventar : MonoBehaviour
             factory.CreateRandomCreature(hit.point);
             }
         }
+        */
         for(int i = 0; i < creatures.Length; i++)
         {
             GameObject o = creatures[i];
