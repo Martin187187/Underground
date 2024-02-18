@@ -28,7 +28,7 @@ public class Inventar : MonoBehaviour
 
 
     void OnEnable(){
-        creature = factory.CreateCreature("Abra", new Vector3(-11.6953087f,7f,-5.6152215f));
+        //creature = factory.CreateCreature("Abra", new Vector3(-11.6953087f,7f,-5.6152215f));
         typeInventory.Add(Type.Beton, 10000);
     }
     void FixedUpdate(){
@@ -55,7 +55,7 @@ public class Inventar : MonoBehaviour
     }
 
     void Update(){
-
+        /*
         GameObject[] creatures = GameObject.FindGameObjectsWithTag("Creature");
         if(creatures.Length< 5)
         {
@@ -78,6 +78,7 @@ public class Inventar : MonoBehaviour
                 Destroy(o);
             }
         }
+        */
         
         float step = generator.getStep();
         
@@ -124,7 +125,7 @@ public class Inventar : MonoBehaviour
             }
         }
 
-        if(Input.GetKeyDown(KeyCode.KeypadEnter))
+        if(Input.GetKeyDown(KeyCode.O))
         {
             
             if (Physics.Raycast(viewer.position, viewer.transform.TransformDirection(Vector3.forward), out RaycastHit hit, Mathf.Infinity)){
@@ -140,11 +141,11 @@ public class Inventar : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.LeftControl)){
             creature.SetFollowTarget(player);
         }
-        if(Input.GetKeyDown(KeyCode.Alpha1)){
+        if(Input.GetKeyDown(KeyCode.F1)){
             creature.ActivateAbilityOne();
         }
         
-        if(Input.GetKeyDown(KeyCode.Alpha2)){
+        if(Input.GetKeyDown(KeyCode.F2)){
             creature.ActivateAbilityTwo();
         }
         if(Vector3.zero != selectedPosition && Input.GetKeyDown(KeyCode.B))

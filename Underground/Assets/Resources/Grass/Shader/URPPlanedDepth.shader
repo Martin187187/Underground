@@ -9,6 +9,7 @@ Shader "Unlit/URPPlanedDepth"
         Base("Base",Float) = 1.0
         DoublePlaned("Double Planes",Float)=0.0
         _WindDistortionMap("Wind Distortion Map", 2D) = "white" {}
+        _NoiseDistortionMap("Noise Distortion Map", 2D) = "white" {}
         _WindFrequency("Wind Frequency", Vector) = (0.05, 0.05, 0, 0)
         _WindStrength ("Wind Strength",Float)=0.0
         

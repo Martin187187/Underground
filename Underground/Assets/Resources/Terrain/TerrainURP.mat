@@ -10,6 +10,8 @@ Material:
   m_Name: TerrainURP
   m_Shader: {fileID: -6465566751694194690, guid: 683f8e02c2f300d4f9eaba23a1f84da4,
     type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -18,6 +20,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -133,7 +136,15 @@ Material:
         m_Texture: {fileID: 2800000, guid: d39a1b9e5d5c7b9499f579fa5c70a2a3, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Triplanar_0a54e448ce67496c947f0d42cf116912_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: d39a1b9e5d5c7b9499f579fa5c70a2a3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Triplanar_26eab54f499749219ee1e642c20a3c00_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 5c4a8c65594fb714388c177bbed315bc, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Triplanar_26eab54f499749219ee1e642c20a3c00_Texture_1_Texture2D:
         m_Texture: {fileID: 2800000, guid: 5c4a8c65594fb714388c177bbed315bc, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -141,7 +152,15 @@ Material:
         m_Texture: {fileID: 2800000, guid: 7e35234e281d141418972228ee38415e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Triplanar_4b235dbc7afc426ab73c5c38aeb4ec09_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 7e35234e281d141418972228ee38415e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Triplanar_5389085dc5824c37868da2cb3ccaf628_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 30b51375156b10e4780537d5793a26c9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Triplanar_5389085dc5824c37868da2cb3ccaf628_Texture_1_Texture2D:
         m_Texture: {fileID: 2800000, guid: 30b51375156b10e4780537d5793a26c9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -149,7 +168,15 @@ Material:
         m_Texture: {fileID: 2800000, guid: abaa3d4f433df074389559003412235d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Triplanar_786a7b1f85314cfcae35a78516606ae6_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: abaa3d4f433df074389559003412235d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Triplanar_96c0404bc1794a678be760b68b4bc68e_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 2d41276a33f8bc949b93fed615e212c4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Triplanar_96c0404bc1794a678be760b68b4bc68e_Texture_1_Texture2D:
         m_Texture: {fileID: 2800000, guid: 2d41276a33f8bc949b93fed615e212c4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -157,11 +184,23 @@ Material:
         m_Texture: {fileID: 2800000, guid: d44cec25420524046b0137655ed7f307, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Triplanar_a90efdcbda544ac99889486250c13ef6_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 24090e6039843cb4db297f6ecbd0fdd1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Triplanar_bd60eea0446b446da34e65161d01f7b8_Texture_1:
         m_Texture: {fileID: 2800000, guid: 2114e87dbc5872042860b1588217688e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Triplanar_bd60eea0446b446da34e65161d01f7b8_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 2114e87dbc5872042860b1588217688e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Triplanar_db438afd7d354d249c0f9ca7e8dcea23_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 2dd80f1b9b10057439e2db179b557ebc, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Triplanar_db438afd7d354d249c0f9ca7e8dcea23_Texture_1_Texture2D:
         m_Texture: {fileID: 2800000, guid: 2dd80f1b9b10057439e2db179b557ebc, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -215,7 +254,7 @@ Material:
     - _Surface: 0
     - _WorkflowMode: 1
     - _ZWrite: 1
-    - _boundsize: 0.0625
+    - _boundsize: 0.015625
     - _step: 0.25396827
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
@@ -236,4 +275,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 5
+  version: 7

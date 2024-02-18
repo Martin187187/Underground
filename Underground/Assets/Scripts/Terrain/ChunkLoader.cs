@@ -6,7 +6,7 @@ using UnityEngine;
 public class ChunkLoader : MonoBehaviour
 {
     
-    public int maxSize = 500;
+    public int maxSize = 0;
     private Dictionary<Vector3Int, ChunkData> loadedChuncks = new Dictionary<Vector3Int, ChunkData>();
     private Queue<Vector3Int> cycleChunks = new Queue<Vector3Int>();
 

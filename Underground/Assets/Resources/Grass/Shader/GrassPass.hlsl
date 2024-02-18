@@ -141,6 +141,7 @@ float3x3 RotZ(float ang)
 }
 
 sampler2D _WindDistortionMap;
+sampler2D _NoiseDistortionMap;
 float4 _WindDistortionMap_ST;
 
 
@@ -300,7 +301,17 @@ half4 LitPassFragment(Varyings input, bool vf : SV_IsFrontFace) : SV_Target
 	float3 inverseNormalLight = LightingLambert(mainLight.color, mainLight.direction, -normalWS) * _TranslucencyFactor;
 
 	//Add the tint color (name this tint...)
-	color += _Vect.rgb+normalLight+inverseNormalLight;
+	//color += _Vect.rgb+normalLight+inverseNormalLight;
+    // Sample noise texture based on grass position
+    float2 noiseUV = input.positionWSAndFogFactor.xz * 0.05f;
+    half4 noiseColor = tex2D(_NoiseDistortionMap, noiseUV);
+    float2 noiseUV2 = input.positionWSAndFogFactor.xz * 0.0005f;
+    half4 noiseColor2 = tex2D(_NoiseDistortionMap, noiseUV2);
+    float value = (noiseColor.r );
+	
+    // Modulate grass color with noise color
+    color += (value *value * half3(149, 160, 68)/200 + (1 -value) *(1 -value) *half3(91,125,58)/200)/2;
+    color += (noiseColor2.r *noiseColor2.r * half3(149, 160, 68)/100 + (1 -noiseColor2.r) *(1 -noiseColor2.r) *half3(91,125,58)/256)/2;
 
 	//How much it should be affected by fog (held in w)
 	float fogFactor = input.positionWSAndFogFactor.w;
@@ -309,10 +320,10 @@ half4 LitPassFragment(Varyings input, bool vf : SV_IsFrontFace) : SV_Target
 	float v = _BaseMap.Sample(sampler_BaseMap, input.uv).a;
 
 	//The bottom value
-	float4 darker = _Darker;
+	float4 darker = float4(color,0) * 0.3f;
 
 	//Lerping from the color down to darker based on UV to get self shadowing effect
-	color = lerp(color, darker, 1 - input.uv.y);
+	color = lerp(color, float4(color,0) * 0.9f, 1 - input.uv.y);
 
 	//Now lerping from color -> darkness based on the shadow attenuation (Shadow Strength = 0.35)
 	color = lerp(darker,color,clamp(mainLight.shadowAttenuation + _ShadowAffectance,0,1));

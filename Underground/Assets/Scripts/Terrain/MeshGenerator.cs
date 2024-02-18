@@ -130,7 +130,7 @@ public class MeshGenerator : MonoBehaviour {
         chunks = new List<Chunk> ();
         existingChunks = new Dictionary<Vector3Int, Chunk> ();
         mat[0].SetFloat("_boundsize", 1/(float)boundsSize);
-        mat[1].SetFloat("_TessellationUniform", (boundsSize/numPointsPerAxis)*4);
+        //mat[1].SetFloat("_TessellationUniform", (boundsSize/numPointsPerAxis));
     }
 
     void InitVisibleChunks () {
@@ -312,6 +312,7 @@ public class MeshGenerator : MonoBehaviour {
             Chunk chunk = existingChunks[values.coord];
             Mesh mesh = chunk.mesh;
             mesh.Clear ();
+            chunk.clearPrefabs();
             mesh.vertices = values.vertices;
             mesh.normals = values.normals;
             mesh.triangles = values.meshTriangles;
@@ -475,7 +476,17 @@ public class MeshGenerator : MonoBehaviour {
                 meshTriangles[i * 3 + j] = i * 3 + j;
                 vertices[i * 3 + j] = tris[i][j].position;
                 normals[i * 3 + j] = tris[i][j].normal;
-                colors[i*3+j] = colorArray[Mathf.Min(4, tris[i][j].data)];
+                float angleDegrees = Mathf.Abs(Vector3.Angle(Vector3.up, normals[i * 3 + j])/180);
+                
+                //colors[i*3+j] = colorArray[Mathf.Min(4, tris[i][j].data)];
+                //colors[i*3+j] = colorArray[0] * Mathf.Sqrt(angleDegrees) + colorArray[2] * (1- Mathf.Sqrt(angleDegrees));
+                if(angleDegrees < 0.05){
+                    colors[i*3+j] = colorArray[1];
+                } else if(angleDegrees < 0.2){
+                    colors[i*3+j] = colorArray[2];
+                } else {
+                    colors[i*3+j] = colorArray[0];
+                }
                 uvs1[i*3+j] = tris[i][j].data == 4 ? new Vector2(1,0) : tris[i][j].data == 5 ? new Vector2(0,1): new Vector2(0,0);
                 uvs2[i*3+j] = tris[i][j].data == 6 ? new Vector2(1,0) : tris[i][j].data == 7 ? new Vector2(0,1): new Vector2(0,0);
                 uvs3[i*3+j] = tris[i][j].data == 8 ? new Vector2(1,0) : tris[i][j].data == 9 ? new Vector2(0,1): new Vector2(0,0);
@@ -561,7 +572,7 @@ public class MeshGenerator : MonoBehaviour {
         }
     }
 
-    Vector3 CentreFromCoord (Vector3Int coord) {
+    public Vector3 CentreFromCoord (Vector3Int coord) {
         // Centre entire map at origin
         if (fixedMapSize) {
             Vector3 totalBounds = (Vector3) numChunks * boundsSize;
@@ -624,6 +635,7 @@ public class MeshGenerator : MonoBehaviour {
 
     Chunk CreateChunk (Vector3Int coord) {
         GameObject chunk = new GameObject ($"Chunk ({coord.x}, {coord.y}, {coord.z})");
+        chunk.tag = "Terrain";
         chunk.transform.parent = chunkHolder.transform;
         Chunk newChunk = chunk.AddComponent<Chunk> ();
         newChunk.coord = coord;
@@ -683,6 +695,35 @@ public class MeshValues {
         this.information = information;
     }
 }
+
+    private void CreateObjects(Chunk chunk)
+    {
+        Vector3 start = CentreFromCoord (chunk.coord);
+        Vector3 end = start + Vector3.one * boundsSize;
+        
+        for (int i = 0; i < 100; i++)
+        {
+            Vector3 spawnPosition = new Vector3(Random.Range(start.x, end.x), 100f, Random.Range(start.z, end.z));
+            RaycastHit hit;
+            float spawn = Mathf.PerlinNoise(spawnPosition.x*0.005f, spawnPosition.z*0.005f);
+            float random = Random.Range(0f, 0.5f);
+            if (spawn < random && Physics.Raycast(new Vector3(spawnPosition.x, 100f, spawnPosition.z), Vector3.down, out hit))
+            {
+                if (hit.collider.tag == "Terrain")
+                {
+                    spawnPosition.y = hit.point.y;
+                    GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    if (cube != null)
+                    {
+                        Quaternion randomRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+                        Vector3 randomScale = Vector3.one * Random.Range(4, 8);
+                        GameObject spawnedObject = Instantiate(cube, spawnPosition, randomRotation);
+                        spawnedObject.transform.localScale = randomScale;
+                    }
+                }
+            }
+        }
+    }
     void OnDrawGizmos () {
         if (showBoundsGizmo) {
             Gizmos.color = boundsGizmoCol;
